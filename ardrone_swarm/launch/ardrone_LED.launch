@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+	<node name="ardrone_led_1" pkg="ardrone_swarm" type="ardrone_led_node" output="screen">
+		<param name="relay" type="int" value="1"/>
+		<param name="topic" type="string" value="/drone1/led"/>
+		<param name="lightRelay" type="int" value="2"/>
+		<param name="modeRelay" type="int" value="3"/>
+	</node>
+	<node name="ardrone_led_2" pkg="ardrone_swarm" type="ardrone_led_node" output="screen">
+		<param name="relay" type="int" value="4"/>
+		<param name="topic" type="string" value="/drone2/led"/>
+	</node>
+</launch>

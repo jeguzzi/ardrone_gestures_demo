@@ -1,0 +1,81 @@
+<launch>
+    <!-- Launches the AR.Drone driver -->
+	<node name="ardrone_driver_2" pkg="ardrone_autonomy" type="ardrone_driver" output="screen" clear_params="true" 
+	args="-ip 192.168.1.12" >
+	    <param name="outdoor" value="0" /> <!-- If we are flying outdoors, will select more aggressive default settings -->
+	    <param name="flight_without_shell" value="0" /> <!-- Changes internal controller gains if we are flying without the propeller guard -->
+	    
+	    <param name="altitude_max" value="3000" /> <!-- in millimeters = 3 meters = 9' -->
+        <param name="altitude_min" value="50" /> <!-- in millimeters = 5cm = 2" -->
+        <param name="euler_angle_max" value="0.1" /> <!-- maximum allowable body angle in radians = 5 degrees -->
+        <param name="control_vz_max" value="1200" /> <!-- maximum z velocity in mm/sec = 0.2m/sec -->
+	    <param name="control_yaw" value="0.7" /> <!-- maximum rotation rate in radians/sec = 40 degrees per second (1/9 rev/sec) -->
+	    <param name="detect_type" value="10" />
+	    <param name="detections_select_h" value="32" />  <!-- In the horizontal camera, look for the orange-blue-orange markers -->
+	    <param name="detections_select_v_hsync" value="128" />  <!-- In the vertical camera, detect the A4 marker -->
+	    <param name="enemy_colors" value="1" />  <!-- Orange-Blue-Orange = 3 -->
+	    <param name="enemy_without_shell" value="0" />  <!-- Detect the indoor stickers, rather than the outdoor hull -->
+	    <param name="navdata_demo" value="1" />
+	    <param name="video_codec" value="128" />	
+	    <remap from="/ardrone/navdata" to="/ardrone_2/navdata" />
+	    <remap from="/ardrone/land" to="/ardrone_2/land" />
+	    <remap from="/ardrone/takeoff" to="/ardrone_2/takeoff" />
+	    <remap from="/ardrone/reset" to="/ardrone_2/reset" />
+	    <remap from="/cmd_vel" to="/ardrone_2/cmd_vel" />
+	    <remap from="/ardrone/flattrim" to="/ardrone_2/flattrim" />
+	    <remap from="/ardrone/setledanimation" to="/ardrone_2/setledanimation" />
+        <remap from="/ardrone/flightanimation" to="/ardrone_2/flightanimation" />
+	    <remap from="/ardrone/image_raw" to="/ardrone_2/image_raw" />
+	    
+
+	</node>	
+	
+	<!-- Launches the keyboard controller -->
+	<node name="keyboard_controller_2" pkg="ardrone_swarm" type="keyboard_controller.py" required="true" 
+	 output = "screen" args = "2" >
+		<remap from="/ar_pose_marker_individual" to="/ar_pose_marker_individual_2" />
+		<remap from="/ardrone/navdata" to="/ardrone_2/navdata" />
+	   <remap from="/ardrone/land" to="/ardrone_2/land" />
+	   <remap from="/ardrone/takeoff" to="/ardrone_2/takeoff" />
+	   <remap from="/ardrone/reset" to="/ardrone_2/reset" />
+	   <remap from="/cmd_vel" to="/ardrone_2/cmd_vel" />
+	   <remap from="/ardrone/flattrim" to="/ardrone_2/flattrim" />
+	   <remap from="/ardrone/setledanimation" to="/ardrone_2/setledanimation" />
+	   <remap from="/ardrone/image_raw" to="/ardrone_2/image_raw" />
+	   <remap from="/ardrone/position" to="/ardrone_2/position" />
+	    <remap from="/ardrone/out_info" to="/ardrone/drone_2_info" />
+	    <remap from="/ardrone/info_in_1" to="/ardrone/drone_1_info" />
+	    <remap from="/ardrone/info_in_2" to="/ardrone/drone_3_info" />
+	    <remap from="/ardrone/info_in_3" to="/ardrone/drone_4_info" />
+		<remap from="/ardrone/nobody_found" to="/ardrone_2/nobody_found" />
+	    <remap from="/ardrone/switch_marker" to="/ardrone_2/switch_marker" />
+	    <remap from="/ardrone/gest" to="/ardrone_2/gest" />
+	</node>
+		
+	<!-- <node name="printer2" pkg = "ardrone_swarm" type = "printer2.py" required = "false" /> -->
+	
+	<node name="state_estimation_2" pkg = "ardrone_swarm" type = "state_estimation.py" required = "true" >
+		<remap from="/ar_pose_marker_room" to="ar_pose_marker_room_2" />
+		<remap from="/ardrone/navdata" to="/ardrone_2/navdata" />
+		<remap from="/ardrone/reset_position" to="/ardrone_2/reset_position" />
+		<remap from="/ardrone/position" to="/ardrone_2/position" />
+        </node>
+	<arg name="marker_size" default="16.0" /> 
+	<arg name="max_new_marker_error" default="0.08" />
+	<arg name="max_track_error" default="0.2" />
+	<arg name="cam_image_topic" default="/ardrone_2/image_raw" />
+	<arg name="cam_info_topic" default="/ardrone/camera_info" />	
+	<arg name="output_frame" default="/ardrone_base_frontcam" />
+	<arg name="bundle_files" default="$(find ardrone_swarm)/bundles/box_3.xml $(find ardrone_swarm)/bundles/hat.xml" />
+
+	<!-- <node name="ar_track_alvar_bundle" pkg="ar_track_alvar" type="findMarkerBundlesNoKinect" respawn="true" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame) $(arg bundle_files)" >
+		<remap from="/ar_pose_marker" to="/ar_pose_marker_bundle" />
+	</node> -->
+	
+	<node name="ar_track_alvar_individual_2" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="true" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" >
+	<remap from="/ar_pose_marker" to="/ar_pose_marker_individual_2" />
+	</node>
+	
+	
+	
+</launch>

@@ -1,0 +1,14 @@
+<launch>
+    <!-- Launches the AR.Drone driver -->
+	<node name="detector_2_1" pkg="ardrone_swarm" type="detector2" output="screen" args="pink.txt">
+	<remap from="/ardrone/gest" to="/ardrone_2/gest" />
+    <remap from="/ardrone/setledanimation" to="/ardrone_2/setledanimation" />
+    <remap from="/ardrone/setflightanimation" to="/ardrone_2/setflightanimation" />
+
+	<remap from="/ardrone/image_raw" to="/ardrone_2/image_raw" />
+    <remap from="/ar_pose_marker_individual" to="/ar_pose_marker_individual_2" />
+    <remap from="/ardrone/switch_marker" to="/ardrone_2/switch_marker" />
+    <remap from="/ardrone/land" to="/ardrone_2/land" />
+    <remap from="/ardrone/takeoff" to="/ardrone_2/takeoff" />
+    </node>
+</launch>

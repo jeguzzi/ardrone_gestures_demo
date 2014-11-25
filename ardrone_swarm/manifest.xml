@@ -1,0 +1,15 @@
+<package>
+  <description brief="AR.Drone swarm">
+  	Autonomous swarm of flying drones
+  </description>
+  <author>Jacopo Banfi</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+
+  <depend package="ardrone_autonomy" />
+  <depend package="ar_track_alvar" />
+  <depend package="sound_play" />
+  
+</package>
+
+
