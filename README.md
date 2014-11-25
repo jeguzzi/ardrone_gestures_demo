@@ -15,9 +15,16 @@ TODO
 ----
 
 - port the code in ardrone\_swarm to catkin
+
+    - References to ar\_track\_alvar and ar\_track\_alvar\_msgs should be changed to ar\_track\_alvar\_idsia and ar\_track\_alvar\_msgs\_idsia
+    - Copy useful files from ardrone\_swarm to ardrone\_gestures\_demo
+
 - compile and test the demo
 - refactor the code
 - add new funcionality
+
+
+
 
 
 
