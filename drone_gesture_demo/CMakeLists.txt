@@ -16,6 +16,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenCV REQUIRED)
 
+find_package(Boost REQUIRED COMPONENTS thread)
+
+include_directories(${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -121,7 +125,12 @@ add_executable(detector src/detectorNode.cpp)
 #   ${catkin_LIBRARIES}
 # )
 
-target_link_libraries(detector ${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a)
+target_link_libraries(detector 
+ ${catkin_LIBRARIES}
+${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a
+${OpenCV_LIBRARIES}
+pthread
+)
 
 #############
 ## Install ##
