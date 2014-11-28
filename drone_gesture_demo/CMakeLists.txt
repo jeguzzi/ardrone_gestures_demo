@@ -107,6 +107,7 @@ include_directories(
 ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}
 )
 
+include_directories(/opt/ros/indigo/lib/sound_play)
 ## Declare a cpp library
 # add_library(ardrone_gestures_demo
 #   src/${PROJECT_NAME}/ardrone_gestures_demo.cpp
