@@ -104,7 +104,7 @@ catkin_package(CATKIN_DEPENDS
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}
+${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
@@ -115,6 +115,7 @@ include_directories(
 ## Declare a cpp executable
 # add_executable(ardrone_gestures_demo_node src/ardrone_gestures_demo_node.cpp)
 add_executable(detector src/detectorNode.cpp)
+add_executable(detectorBig src/detectorNodeBig.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -126,7 +127,14 @@ add_executable(detector src/detectorNode.cpp)
 # )
 
 target_link_libraries(detector 
- ${catkin_LIBRARIES}
+${catkin_LIBRARIES}
+${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a
+${OpenCV_LIBRARIES}
+pthread
+)
+
+target_link_libraries(detectorBig 
+${catkin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a
 ${OpenCV_LIBRARIES}
 pthread
@@ -141,10 +149,19 @@ pthread
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+
+ install(PROGRAMS	scripts/controller.py  
+			scripts/controller_main.py 
+		 	scripts/drone_info.py  
+			scripts/keyboard_controller.py
+			scripts/drone_video_display2.py
+		 	scripts/tag.py
+			scripts/utils.py
+			scripts/sounds.py
+		DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ )
+
+
 
 ## Mark executables and/or libraries for installation
 # install(TARGETS ardrone_gestures_demo ardrone_gestures_demo_node
@@ -166,6 +183,8 @@ pthread
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+
 
 #############
 ## Testing ##
