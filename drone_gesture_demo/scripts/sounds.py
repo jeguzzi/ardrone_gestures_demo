@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest('drone_gesture_demo')
+import roslib; roslib.load_manifest('drone_gestures_demo')
 import rospy
 
 from std_msgs.msg import Int8, Int16, Empty
