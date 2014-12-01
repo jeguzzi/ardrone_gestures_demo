@@ -240,8 +240,29 @@ int process_image(cv::Mat inputImage, bool takenoff, bool marker_detected, doubl
 		// Convert RGB to HSV format //
 		cvCvtColor(image, imageHSV, CV_BGR2HSV);
 		
+
 		// Segement Color //
+
+		//Jerome Change -> hue value are periodic in [0,180] -> filter should be 0 - min AND max - 180 if max-min > 90
+		//Alternatively we could use CV_BGR2HSV_FULL
+		if(Hmax-Hmin>90)
+		  {
+		    IplImage *imageColorHigh=cvCreateImage(cvGetSize(image), IPL_DEPTH_8U, 1);
+		    cvInRangeS(imageHSV, cvScalar(0, Smin, Vmin), cvScalar(Hmin, Smax, Vmax), imageColor);
+		    cvInRangeS(imageHSV, cvScalar(Hmax, Smin, Vmin), cvScalar(180, Smax, Vmax), imageColorHigh); 
+		    cvOr(imageColorHigh,imageColor,imageColor);
+		    cvReleaseImage(&imageColorHigh);
+		  }
+		else
+		  {
 		cvInRangeS(imageHSV, cvScalar(Hmin, Smin, Vmin), cvScalar(Hmax, Smax, Vmax), imageColor); // Color threshold
+		  }
+
+
+
+
+		// Segement Color //
+		//		cvInRangeS(imageHSV, cvScalar(Hmin, Smin, Vmin), cvScalar(Hmax, Smax, Vmax), imageColor); // Color threshold
                
         cvErode(imageColor, imageColor, NULL, 1); 
         cvDilate(imageColor, imageColor, NULL, 2); 
@@ -252,6 +273,7 @@ int process_image(cv::Mat inputImage, bool takenoff, bool marker_detected, doubl
 		// Color blob //
 		CBlobResult blobsColor;
 		blobsColor = CBlobResult(imageColor, NULL, 0);
+
 		CBlob ColorBlob1, ColorBlob2;
 		
 		//Get two biggest blobs (hopefully the gloves)
@@ -548,7 +570,7 @@ public: Detector():it_(nh_){
 		    takeoff_count += 1;
 			cout << "Count takeoff " << takeoff_count << endl;
 		    if (takeoff_count == 8){
-				std_msgs::Int16 gesture;
+				std_msgs::Int8 gesture;
         		gesture.data = TAKEOFF;
 				cout << "Sending Takeoff" <<endl;
 			    gesture_pub.publish(gesture);

@@ -7,7 +7,7 @@ from std_msgs.msg import Int8, Int16, Empty
 from sound_play.msg import SoundRequest
 from sound_play.libsoundplay import SoundClient
 
-PATH = '/home/juan/catkin_ws/src/ardrone_gestures_demo/drone_gesture_demo/sounds/'
+PATH = '/home/jerome/Dev/catkin_ws/src/ardrone_gestures_demo/drone_gesture_demo/sounds/'
 COMMAND_FOR_ME = PATH + 'command_for_me.wav' #you gesture
 END_SENTENCE = PATH + 'end_sentence.wav' #before land, right e left
 ERROR = PATH + 'error.wav'
