@@ -14,12 +14,23 @@ Install
 TODO
 ----
 
-- port the code in ardrone\_swarm to catkin
+
+- try the demo in simulation
+- write simulated optitrack node (same messages as Eduardo's node)
+- refactor the code
+- add new funcionality
+
+
+DONE
+----
+
+- (1/12/2014) port the code in ardrone\_swarm to catkin
 
     - References to ar\_track\_alvar and ar\_track\_alvar\_msgs should be changed to ar\_track\_alvar\_idsia and ar\_track\_alvar\_msgs\_idsia
     - Copy useful files from ardrone\_swarm to ardrone\_gestures\_demo
     
     - patch (detectorNode*):
+
         
 Code: 
 
@@ -37,17 +48,7 @@ Code:
       {
     cvInRangeS(imageHSV, cvScalar(Hmin, Smin, Vmin), cvScalar(Hmax, Smax, Vmax), imageColor); // Color threshold
       }
-    
-    
-    
-
-- compile and test the demo
-- refactor the code
-- add new funcionality
-
-
-
-
-
+      
+- (1/12/2014) compile and test the demo
 
 
