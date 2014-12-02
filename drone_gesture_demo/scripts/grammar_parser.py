@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 from std_msgs.msg import String
     
@@ -41,8 +43,8 @@ class Parser(object):
     follow.next['right']=follow.next['right_blob']=follow_right
      
     def __init__(self):    
-        self.gesture_sub=rospy.Subscriber("/ardrone/gestures",String,hasReceivedNewGesture);
-        self.word_pub = rospy.Publisher("/ardrone/words", queue_size=1);
+        self.gesture_sub=rospy.Subscriber("/ardrone/gestures",String,self.hasReceivedNewGesture);
+        self.word_pub = rospy.Publisher("/ardrone/words", String,queue_size=1);
         self.word=self.begin
         self.gesture=None
         
@@ -67,7 +69,7 @@ class Parser(object):
             self.word_pub.publish('FAIL')
             self.word=begin
 
-        rospy.sleep(TIME_FEEDBACK+TIME_CL)
+        rospy.sleep(self.TIME_FEEDBACK+self.TIME_CL)
         
 
 if __name__ == '__main__':

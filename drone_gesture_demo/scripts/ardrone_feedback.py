@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 from std_msgs.msg import String
 from ardrone_autonomy.srv import FlightAnim,LedAnim 

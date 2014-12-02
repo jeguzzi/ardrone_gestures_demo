@@ -9,7 +9,7 @@ from sound_play.msg import SoundRequest
 from sound_play.libsoundplay import SoundClient
 
 rospack = rospkg.RosPack()
-PATH=os.path.join(rospack.get_path('drone_gestures_demo'),'sounds')
+PATH=os.path.join(rospack.get_path('drone_gestures_demo'),'sounds/')
 print 'SOUND PATH',PATH
 #PATH = '/home/jerome/Dev/catkin_ws/src/ardrone_gestures_demo/drone_gesture_demo/sounds/'
 COMMAND_FOR_ME = PATH + 'command_for_me.wav' #you gesture
