@@ -318,48 +318,75 @@ int process_image(cv::Mat inputImage, bool takenoff, bool marker_detected, doubl
         double min_area = dim*0.11;
 		double max_area = dim*2.5;
 		//Classify the gesture
-        if (ColorBlob1.Area() > min_area and ColorBlob1.Area() < max_area){
-            
-            //at least one blob
-            
-            if (ColorBlob2.Area() > min_area and ColorBlob2.Area() < max_area){ 
-                
-                //two blobs seen
-                
-                if (centroid1.y < yc and centroid2.y > yc)
-                {
-                    // 1 is top
-                    // 2 is bottom
-                    if (centroid1.x < xc) return TOP_RIGHT_BLOB;
-                    return TOP_LEFT_BLOB;
-                }
-                if (centroid2.y < yc and centroid1.y > yc)
-                {
-                    // 2 is top
-                    // 1 is bottom
-                    if (centroid2.x < xc) return TOP_RIGHT_BLOB;
-                    return TOP_LEFT_BLOB;
-                }
-                
-                if(centroid1.y < yc and centroid2.y < yc) return TOP_TWO_BLOBS;
-                
-                return BOTTOM_TWO_BLOBS;
-			}
-            else
-            {
-                // only one blob
-                
-                if (centroid1.y < yc)
-                {
-                    if (centroid1.x < xc) return TOP_RIGHT_BLOB;
-                    return TOP_LEFT_BLOB;
-                }
-                return BOTTOM_BLOB;
-            }
-        }
-        return NO_BLOBS
-}
+        if (ColorBlob1.Area() > min_area and ColorBlob1.Area() < max_area){ //at least one blob!{
+			switch (stage){
+				case STAGE_1:{ 
+				    //S1- recognize if in a single frame the person is doing no gesture
+                    //(both blobs below marker, or no blobs) or the YOU gesture (right blob
+                    //above marker).
 
+					//Two cases (I could see only one blob)
+                    if (ColorBlob2.Area() > min_area and ColorBlob2.Area() < max_area){ //two blobs seen
+						if((centroid1.y < yc and centroid2.y > yc) or (centroid1.y > yc and centroid2.y < yc)) return YOU;
+						else return NO_GEST;
+					}
+					
+					else{ //1 blob seen
+						if (centroid1.y < yc)
+							return YOU;
+						else return NO_GEST;                  
+						}
+					break;
+				}
+
+				case STAGE_1_END:
+                case STAGE_2:{
+					//S2- recognize if in a single frame the person is doing the gesture
+                    //FOLLOW (both blobs above marker, separated) or the gesture LAND
+                    //(single larger blob above marker), or no gesture (otherwise)
+					if (ColorBlob2.Area() > min_area and ColorBlob2.Area() < max_area){ //could be follow
+						if (centroid1.y < yc and centroid2.y < yc) return FOLLOW;
+						else return NO_GEST;
+					}
+					else if (centroid1.y < yc) return LAND; //single larger blob
+					else return NO_GEST;
+					break;
+				}
+
+				case STAGE_2_END:
+                case STAGE_3:{
+					//S3- recognize if in a single frame the person is doing the gesture
+                    //LEFT (left marker farther from the marker, same height as the marker)
+                    //or the gesture RIGHT (guess), or no gesture (otherwise)
+					if (ColorBlob2.Area() > min_area and ColorBlob2.Area() < max_area){ //two blobs to handle -> one must be under the marker
+						if (centroid1.y < yc and centroid2.y > yc){ //1 is choosing the direction
+							if (centroid1.x < xc) return RIGHT;
+							else return LEFT;
+						}else if (centroid1.y > yc and centroid2.y < yc) //2 is choosing
+							if (centroid2.x < xc) return RIGHT;
+							else return LEFT;
+						else return NO_GEST;
+					}
+					else{ //only one blob
+						if (centroid1.y < yc and centroid1.x < xc) return RIGHT;
+						else if (centroid1.y < yc and centroid1.x > xc) return LEFT;
+						else return NO_GEST;
+					}
+					break;
+				}
+
+                default: {return NO_GEST; break;}
+					
+			}
+
+			
+		// else no gesture detected
+		}
+		else {
+		    return NO_GEST;
+		}
+	}
+}
 
 class Detector{ 
   	ros::NodeHandle nh_;
