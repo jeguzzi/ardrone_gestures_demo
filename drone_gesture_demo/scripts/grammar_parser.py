@@ -8,14 +8,6 @@ class Word(object):
         self.value=value
         self.action=action
         self.next={}
-    
-    def next_word(self,string):
-        if self.next.has_key(string):
-            word=self.next[string]
-            word_pub.publish(word.value)
-            return word
-        else:
-            return self
      
     @property        
     def is_end_of_sentence(self):
@@ -54,7 +46,7 @@ class Parser(object):
 
     def update(self):
         
-        new_word=self.word.next_word(self.gesture)
+        new_word=self.word.next(self.gesture,None)
         
         if (self.word is self.begin) and (new_word is None):
             return
