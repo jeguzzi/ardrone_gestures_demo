@@ -1,12 +1,15 @@
 <?xml version="1.0"?> 
-
+<gazebo version ='1.0'>
   <world name="sala_movimento">
-    
-	<!-- Ground Plane -->
-    	<include filename="ground_plane.model" model_name="ground_plane" model_pose="0.0 0.0 0.0 0.0 0.0 0.0"/>
-	
-	<!-- A global light source -->
-    	<include filename="sun.light"/>
+
+    <include>
+	<uri>model://ground_plane</uri>
+	<name>ground_planen</name>
+        <pose>0.0 0.0 0 0 0 0</pose>
+    </include>
+    <include>
+	<uri>model://sun</uri>
+    </include>
 
 
   </world>

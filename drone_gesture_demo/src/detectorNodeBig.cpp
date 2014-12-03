@@ -536,7 +536,7 @@ public: Detector():it_(nh_){
 				marker_detected = true;
 				xc = m_res.xc;
 				yc = m_res.yc;
-                dim = m_res.dim;
+                		dim = m_res.dim;
 				//cout << "XC: " << xc << endl;
 				//cout << "YC: " << yc << endl;
 			}

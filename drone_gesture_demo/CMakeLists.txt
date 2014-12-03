@@ -117,6 +117,7 @@ include_directories(/opt/ros/indigo/lib/sound_play)
 # add_executable(ardrone_gestures_demo_node src/ardrone_gestures_demo_node.cpp)
 add_executable(detector src/detectorNode.cpp)
 add_executable(detectorBig src/detectorNodeBig.cpp)
+add_executable(vision src/vision.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -127,19 +128,9 @@ add_executable(detectorBig src/detectorNodeBig.cpp)
 #   ${catkin_LIBRARIES}
 # )
 
-target_link_libraries(detector 
-${catkin_LIBRARIES}
-${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a
-${OpenCV_LIBRARIES}
-pthread
-)
-
-target_link_libraries(detectorBig 
-${catkin_LIBRARIES}
-${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a
-${OpenCV_LIBRARIES}
-pthread
-)
+target_link_libraries(detector ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a ${OpenCV_LIBRARIES} pthread)
+target_link_libraries(detectorBig  ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a ${OpenCV_LIBRARIES} pthread)
+target_link_libraries(vision ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a ${OpenCV_LIBRARIES} pthread)
 
 #############
 ## Install ##

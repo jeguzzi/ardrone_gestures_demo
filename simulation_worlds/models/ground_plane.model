@@ -1,8 +1,4 @@
-<!-- 
-
-
- -->
-
+<!-- -->
 <gazebo version="1.0">
   <model name="ground_plane_model" static="true">
       <link name="ground_plane_link">
