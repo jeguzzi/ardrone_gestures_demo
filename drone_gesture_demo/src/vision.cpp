@@ -2,35 +2,18 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
-#include <opencv2/imgproc/imgproc.hpp>
 #include "std_msgs/Int16.h"
 #include "std_msgs/Int8.h"
 #include "std_msgs/Empty.h"
 #include "std_msgs/String.h"
-#include "ar_track_alvar_msgs_idsia/AlvarMarkers.h"
-#include "ar_track_alvar_msgs_idsia/AlvarMarker.h"
-#include "ardrone_autonomy/LedAnim.h"
-#include "ardrone_autonomy/FlightAnim.h"
+
+#include <sys/stat.h>
 #include "stdio.h"
 #include "stdlib.h"
 #include "math.h"
 #include "limits.h"
 #include "float.h"
 #include "time.h"
-#include "cv.h"
-#include "highgui.h"
-#include "../cvBlobsLib/include/BlobResult.h"
-#include "../cvBlobsLib/include/Blob.h"
-//#include <cvblob.h>
-
-#include "opencv2/objdetect/objdetect.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/contrib/contrib.hpp"
-#include "pthread.h"
-#include <sys/stat.h>
-#include <boost/circular_buffer.hpp>
-#include <semaphore.h>
-#include <pthread.h>
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -38,7 +21,24 @@
 #include <map>
 #include <cmath>
 #include <fstream>
+
+//#include <cvblob.h>
+
+#include "ar_track_alvar_msgs_idsia/AlvarMarkers.h"
+#include "ar_track_alvar_msgs_idsia/AlvarMarker.h"
+
+#include "opencv2/objdetect/objdetect.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/contrib/contrib.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
+#include "cv.h"
+#include "highgui.h"
+#include "../cvBlobsLib/include/BlobResult.h"
+#include "../cvBlobsLib/include/Blob.h"
+
 #include <gesture_messages/led.h>
+
+#include <boost/circular_buffer.hpp>
 
 
 #define AREA_TAKEOFF 1500
@@ -141,7 +141,7 @@ gesturestype process_image(cv::Mat inputImage, bool takenoff, bool marker_detect
 
 		// Segement Color //
 
-		//Jerome Change -> hue value are periodic in [0,180] -> filter should be 0 - min AND max - 180 if max-min > 90
+		//Jerome Change -> hue value are periodic in [0,180] -> filter should be 0 - min &&   max - 180 if max-min > 90
 		//Alternatively we could use CV_BGR2HSV_FULL
 		if(Hmax-Hmin>90){
 		    IplImage *imageColorHigh=cvCreateImage(cvGetSize(image), IPL_DEPTH_8U, 1);
@@ -215,23 +215,23 @@ gesturestype process_image(cv::Mat inputImage, bool takenoff, bool marker_detect
 		double max_area = dim*2.5;
 
 		//Classify the gesture
-			if (ColorBlob1.Area() > min_area and ColorBlob1.Area() < max_area){
+			if (ColorBlob1.Area() > min_area &&   ColorBlob1.Area() < max_area){
 			    	//at least one blob
-			    	if (ColorBlob2.Area() > min_area and ColorBlob2.Area() < max_area){
+			    	if (ColorBlob2.Area() > min_area &&   ColorBlob2.Area() < max_area){
 				//two blobs seen
-					if (centroid1.y < yc and centroid2.y > yc){
+					if (centroid1.y < yc &&   centroid2.y > yc){
 					    // 1 is top
 					    // 2 is bottom
 					    if (centroid1.x < xc) return TOP_RIGHT_BLOB;
 					    return TOP_LEFT_BLOB;
 					}
-					if (centroid2.y < yc and centroid1.y > yc){
+					if (centroid2.y < yc &&   centroid1.y > yc){
 					    // 2 is top
 					    // 1 is bottom
 					    if (centroid2.x < xc) return TOP_RIGHT_BLOB;
 					    return TOP_LEFT_BLOB;
 					}
-					if(centroid1.y < yc and centroid2.y < yc) return TOP_TWO_BLOBS;
+					if(centroid1.y < yc &&   centroid2.y < yc) return TOP_TWO_BLOBS;
 					return BOTTOM_TWO_BLOBS;
 				}
 		    		else{
@@ -270,10 +270,10 @@ class Detector{
 	//coherence with python gui
 	ros::Publisher hmin_pub;
    	ros::Publisher hmax_pub;
-    	ros::Publisher smin_pub;
-    	ros::Publisher smax_pub;
-    	ros::Publisher vmin_pub;
-    	ros::Publisher vmax_pub;
+    ros::Publisher smin_pub;
+    ros::Publisher smax_pub;
+    ros::Publisher vmin_pub;
+    ros::Publisher vmax_pub;
 
 	// Gestures publisher
 	ros::Publisher gesture_message;	
@@ -293,7 +293,7 @@ public: Detector():it_(nh_){
     
 
 	image_sub_ = it_.subscribe("/ardrone/image_raw", 1, &Detector::imageCb, this);
-    	markers_sub = nh_.subscribe("/ar_pose_marker_individual", 1, &Detector::receive_markers, this);
+    markers_sub = nh_.subscribe("/ar_pose_marker_individual", 1, &Detector::receive_markers, this);
 	switch_marker_sub = nh_.subscribe("/ardrone/switch_marker", 1, &Detector::receive_switch_marker, this);
 	land_sub = nh_.subscribe("/ardrone/land", 1, &Detector::receive_land, this);
 	takeoff_sub = nh_.subscribe("/ardrone/takeoff", 1, &Detector::receive_takeoff, this);			
@@ -306,7 +306,7 @@ public: Detector():it_(nh_){
 	vmax_sub = nh_.subscribe("/ardrone/Vmax", 1, &Detector::receive_vmax, this);
 
 
-	gesture_message = nh_.advertise<std_msgs::String>("/drone_gestures_demo/vision", 1);
+	gesture_message = nh_.advertise<std_msgs::String>("gesture", 1);
 	hmin_pub = nh_.advertise<std_msgs::Int16>("/ardrone/Hminc", 1);
 	hmax_pub = nh_.advertise<std_msgs::Int16>("/ardrone/Hmaxc", 1);
 	smin_pub = nh_.advertise<std_msgs::Int16>("/ardrone/Sminc", 1);
@@ -316,21 +316,20 @@ public: Detector():it_(nh_){
 
 	// Map definition
 	gesturesnames[TOP_RIGHT_BLOB]="top_right_blob";
-    	gesturesnames[TOP_LEFT_BLOB]="top_left_blob";
-    	gesturesnames[TOP_TWO_BLOBS]="top_two_blobs'";
-    	gesturesnames[BOTTOM_TWO_BLOBS]="bottom_two_blobs";
-    	gesturesnames[BOTTOM_BLOB]="bottom_blob";
-        gesturesnames[NO_BLOB]="no_blob";
+    gesturesnames[TOP_LEFT_BLOB]="top_left_blob";
+    gesturesnames[TOP_TWO_BLOBS]="top_two_blobs'";
+    gesturesnames[BOTTOM_TWO_BLOBS]="bottom_two_blobs";
+    gesturesnames[BOTTOM_BLOB]="bottom_blob";
+    gesturesnames[NO_BLOB]="no_blob";
 
 	
-    	marker_detected = false;
+    marker_detected = false;
 	takenoff = false;
 
   	}
 
 ~Detector(){
 	cvDestroyWindow("Segmented_image");
-	//sem_destroy(&mutex);
 }
 
 	void receive_land(const std_msgs::Empty& msg){
@@ -395,12 +394,11 @@ public: Detector():it_(nh_){
 		//cout << endl;
 		bool marker_present = false;
 		for(vector<ar_track_alvar_msgs_idsia::AlvarMarker>::const_iterator it = msg.markers.begin(); it != msg.markers.end(); ++it){
-			if ((cur_marker == MARKER_1 and (*it).id == MARKER_1) or (cur_marker == MARKER_2 and (*it).id == MARKER_2) or
-                    	(cur_marker == MARKER_3 and (*it).id == MARKER_3) or (cur_marker == MARKER_4 and (*it).id == MARKER_4) or
-                    	(cur_marker == MARKER_5 and (*it).id == MARKER_5) or (cur_marker == MARKER_6 and (*it).id == MARKER_6) or
-                    	(cur_marker == MARKER_7 and (*it).id == MARKER_7)){
+            
+            if(cur_marker==it->id && (cur_marker == MARKER_1 || cur_marker == MARKER_2 || cur_marker == MARKER_3 || cur_marker == MARKER_4 
+                                        || cur_marker == MARKER_5 || cur_marker == MARKER_6 || cur_marker == MARKER_7)){
+   
 				MarkerImg m = {(*it).x, (*it).y, (*it).dim};
-				//circularbufferMarker.push_back(m);
 				circularbufferMarker.push_back(m);
 				marker_present = true;
 				}
@@ -500,7 +498,7 @@ int main(int argc, char** argv)
 	cvNamedWindow("Segmented_image", CV_WINDOW_AUTOSIZE);
     	Detector ic;
 
-    	ROS_INFO("Done and now listen for incoming images");
+    	ROS_INFO("Done &&   now listen for incoming images");
     	ros::spin();
     return 0;
 }
