@@ -44,14 +44,7 @@
 #define AREA_TAKEOFF 1500
 #define PERC_OK 0.7
 
-//StateMachine stages
-#define STAGE_1 1
-#define STAGE_1_END 2
-#define STAGE_2 3
-#define STAGE_2_END 4
-#define STAGE_3 5
-#define STAGE_3_END 6
-#define STAGE_FAIL 7
+
 
 #define TIME_CL 1.5
 
@@ -70,7 +63,7 @@ using namespace cv;
 
 int stage;
 std::vector<int> vec_aux(6,0);
-enum gesturestype{NO_BLOB, TOP_RIGHT_BLOB, TOP_LEFT_BLOB, TOP_TWO_BLOBS, BOTTOM_TWO_BLOBS, BOTTOM_BLOB};
+enum gesturestype{NO_BLOB, BIG_BLOB, TOP_RIGHT_BLOB, TOP_LEFT_BLOB, TOP_TWO_BLOBS, BOTTOM_TWO_BLOBS, BOTTOM_BLOB};
 std::deque<gesturestype> gest_outputs (15,NO_BLOB); 
 std::map<gesturestype,string> gesturesnames;
 	//gesturesnames[TOP_RIGHT_BLOB] = top_right_blob;
@@ -92,11 +85,11 @@ CvPoint centroid1, centroid2;
 
 //Define color thresholds
 //Yellow
-int Hmin = 18;
-int Hmax = 28;
-int Smin = 150;
+int Hmin = 15;
+int Hmax = 170;
+int Smin = 50;
 int Smax = 255;
-int Vmin = 10;
+int Vmin = 50;
 int Vmax = 255;
 
 bool published_start_v = false;
@@ -105,7 +98,7 @@ bool send_hsv = false;
 MarkerImg get_avg_xy(){
 	double x = 0;
 	double y = 0;
-    double dim = 0;
+    	double dim = 0;
 	double count = 0;
 	 for(CircularBufferMarker::const_iterator it = circularbufferMarker.begin(); it != circularbufferMarker.end(); ++it){
         if ((*it).xc != -1){
@@ -127,6 +120,7 @@ MarkerImg get_avg_xy(){
 
 gesturestype process_image(cv::Mat inputImage, bool takenoff, bool marker_detected, double xc, double yc, double dim) {
 		// Convert from Mat to IplImage+
+		
 		IplImage* image = cvCloneImage(&(IplImage)inputImage); 
 
 		// THRESH HOLDING //
@@ -137,6 +131,7 @@ gesturestype process_image(cv::Mat inputImage, bool takenoff, bool marker_detect
 
 		// Convert RGB to HSV format //
 		cvCvtColor(image, imageHSV, CV_BGR2HSV);
+		cvShowImage("HSV image", imageHSV);
 		
 
 		// Segement Color //
@@ -146,7 +141,12 @@ gesturestype process_image(cv::Mat inputImage, bool takenoff, bool marker_detect
 		if(Hmax-Hmin>90){
 		    IplImage *imageColorHigh=cvCreateImage(cvGetSize(image), IPL_DEPTH_8U, 1);
 		    cvInRangeS(imageHSV, cvScalar(0, Smin, Vmin), cvScalar(Hmin, Smax, Vmax), imageColor);
+			//cvShowImage("1", imageColor);
+
 		    cvInRangeS(imageHSV, cvScalar(Hmax, Smin, Vmin), cvScalar(180, Smax, Vmax), imageColorHigh); 
+			//cvShowImage("2", imageColorHigh);
+
+
 		    cvOr(imageColorHigh,imageColor,imageColor);
 		    cvReleaseImage(&imageColorHigh);
 		  }
@@ -154,47 +154,23 @@ gesturestype process_image(cv::Mat inputImage, bool takenoff, bool marker_detect
 		    cvInRangeS(imageHSV, cvScalar(Hmin, Smin, Vmin), cvScalar(Hmax, Smax, Vmax), imageColor); // Color threshold
 		  }
 
-
-
-
 		// Segement Color //
 		// cvInRangeS(imageHSV, cvScalar(Hmin, Smin, Vmin), cvScalar(Hmax, Smax, Vmax), imageColor); // Color threshold
                
         	cvErode(imageColor, imageColor, NULL, 1); 
         	cvDilate(imageColor, imageColor, NULL, 2); 
         	cvErode(imageColor, imageColor, NULL, 1);
-
 		cvShowImage("Segmented_image", imageColor); 
 
 		// Color blob //
 		CBlobResult blobsColor;
 		blobsColor = CBlobResult(imageColor, NULL, 0);
-
 		CBlob ColorBlob1, ColorBlob2;
-		
 		//Get two biggest blobs (hopefully the gloves)
 		blobsColor.GetNthBlob(CBlobGetArea(), 0, ColorBlob1);
 
-		if (!takenoff){
-			cvReleaseImage(&image);
-			cvReleaseImage(&imageHSV);
-			cvReleaseImage(&imageColor);
-			//free memory
-			blobsColor.ClearBlobs();			
-			//if (ColorBlob1.Area() > AREA_TAKEOFF){ //very close! -> takeoff
-			//	return TAKEOFF;
-			//}
-			//else return NO_GEST;
-		} //takeoff = True
-		else if(!marker_detected){
-			cvReleaseImage(&image);
-			cvReleaseImage(&imageHSV);
-			cvReleaseImage(&imageColor);
-			//free memory
-			blobsColor.ClearBlobs();			
-			//return NO_GEST;
-		}
-		else{
+		
+		
 		// Go on with centroids
 		////////////////////////////////////////////////////////////////////////////////////////
 		blobsColor.GetNthBlob(CBlobGetArea(), 1, ColorBlob2);
@@ -214,9 +190,20 @@ gesturestype process_image(cv::Mat inputImage, bool takenoff, bool marker_detect
         	double min_area = dim*0.11;
 		double max_area = dim*2.5;
 
+		cout << "blob area "<< ColorBlob1.Area() <<endl;
+		cout << "blob2 area "<< ColorBlob2.Area() <<endl;
 		//Classify the gesture
+
+			if (ColorBlob1.Area() > AREA_TAKEOFF){ //very close! -> takeoff
+					return BIG_BLOB;
+			}
 			if (ColorBlob1.Area() > min_area and ColorBlob1.Area() < max_area){
 			    	//at least one blob
+				if(!marker_detected){			
+					return NO_BLOB;
+					cout << "MARKER NOT DETECTED "<<endl;
+				}
+
 			    	if (ColorBlob2.Area() > min_area and ColorBlob2.Area() < max_area){
 				//two blobs seen
 					if (centroid1.y < yc and centroid2.y > yc){
@@ -243,8 +230,9 @@ gesturestype process_image(cv::Mat inputImage, bool takenoff, bool marker_detect
 				return BOTTOM_BLOB;
 		    		}
 			} // close at least one blob
+			cout << "NO BLOB IN THE IMAGE "<<endl;
 			return NO_BLOB;
-		}// Close else go on with centroids
+		// Close else go on with centroids
 
 }//Close function
 
@@ -321,6 +309,7 @@ public: Detector():it_(nh_){
     	gesturesnames[BOTTOM_TWO_BLOBS]="bottom_two_blobs";
     	gesturesnames[BOTTOM_BLOB]="bottom_blob";
         gesturesnames[NO_BLOB]="no_blob";
+	gesturesnames[BIG_BLOB] = "big_blob";
 
 	
     	marker_detected = false;
@@ -336,7 +325,6 @@ public: Detector():it_(nh_){
 	void receive_land(const std_msgs::Empty& msg){
 		takenoff = false;
 		cur_marker = -1;
-		stage = STAGE_1;
 		cout << "Received land" << endl;
 	}
 		
@@ -405,7 +393,7 @@ public: Detector():it_(nh_){
 				marker_present = true;
 				}
 			}
-			//cout << marker_present << endl;
+		cout << "marker_present " << marker_present <<endl;
 		if (!marker_present){
 			MarkerImg m = {-1, -1, -1};
 			//circularbufferMarker.push_back(m);
@@ -432,6 +420,8 @@ public: Detector():it_(nh_){
 			cv_bridge::CvImagePtr cv_ptr;
      			cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 			Mat image=cv_ptr->image;
+			imshow("test window",image);
+			waitKey(1);
 			call_vision(image);
 	    	}
     		catch (cv_bridge::Exception& e){
@@ -465,6 +455,8 @@ public: Detector():it_(nh_){
 	vec_aux_max = std::max_element(vec_aux.begin(), vec_aux.end());
 	vec_aux_max_potition=std::distance(vec_aux.begin(), vec_aux_max);
 	
+	cout << "result " << result <<endl;
+	cout << "marker_detected " << marker_detected <<endl;
 
 	if (*vec_aux_max > 7 && status!=vec_aux_max_potition){ 
 		
