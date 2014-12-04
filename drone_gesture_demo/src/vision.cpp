@@ -31,6 +31,7 @@
 #include <boost/circular_buffer.hpp>
 #include <semaphore.h>
 #include <pthread.h>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <deque>
@@ -284,6 +285,7 @@ class Detector{
     	double dim;
 
 	// variables to publish the gesture message
+	gesturestype vec_aux_max_potition, status = NO_BLOB; 
 	std::vector<int>::iterator vec_aux_max;
 	std_msgs::String output_label;
 	  
@@ -453,20 +455,22 @@ public: Detector():it_(nh_){
 	
 	if (vec_aux[gest_outputs.front()]>0)
 		vec_aux[gest_outputs.front()]--;
-
 	result = process_image(image, takenoff, marker_detected, xc, yc, dim);
 	gest_outputs.push_back(result);
 	gest_outputs.pop_front();
 
 	if (vec_aux[gest_outputs.back()]<15)
 		vec_aux[gest_outputs.back()]++;
-
 	// Obtain the maximum value of the vector
 	vec_aux_max = std::max_element(vec_aux.begin(), vec_aux.end());
+	vec_aux_max_potition=std::distance(vec_aux.begin(), vec_aux_max);
 	
-	if (*vec_aux_max > 7){ 
-		output_label.data = gesturesnames[std::distance(vec_aux.begin(), vec_aux_max)];
+
+	if (*vec_aux_max > 7 && status!=vec_aux_max_potition){ 
+		
+		output_label.data = gesturesnames[vec_aux_max_potition];
 		gesture_message.publish(output_label);
+		status=vec_aux_max_potition;
 	}
 		
 	image.release();
