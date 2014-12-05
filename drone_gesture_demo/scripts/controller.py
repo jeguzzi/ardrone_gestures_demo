@@ -8,9 +8,7 @@ from geometry_msgs.msg import Point
 from std_msgs.msg import Empty, String, Int8, Int16           
 from std_srvs.srv import Empty as EmptySrv
 from ardrone_autonomy.msg import Navdata 
-#from ardrone_swarm.msg import Position, Drone_info, led
 from gesture_messages.msg import Position, Drone_info, led
-#from ar_track_alvar.msg import AlvarMarkers
 from ar_track_alvar_msgs_idsia.msg import AlvarMarkers
 from tf.transformations import euler_from_quaternion
 

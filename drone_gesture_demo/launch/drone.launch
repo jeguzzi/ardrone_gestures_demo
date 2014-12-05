@@ -49,7 +49,7 @@
 		<param name="topic" type="string" value="/drone2/led"/>
 	</node>-->
 	
-	<arg name="marker_size" default="13.0" />
+	<arg name="marker_size" default="13.0" />/ar_pose_marker_individual
 	<arg name="max_new_marker_error" default="0.04" />
 	<arg name="max_track_error" default="0.2" />
 	<arg name="cam_image_topic" default="/ardrone/image_raw" />

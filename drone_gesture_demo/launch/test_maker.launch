@@ -1,0 +1,17 @@
+<!-- -->
+<launch>
+
+
+	<arg name="marker_size" default="13.0" />
+	<arg name="max_new_marker_error" default="0.04" />
+	<arg name="max_track_error" default="0.2" />
+	<arg name="cam_image_topic" default="/ardrone/image_raw" />
+	<arg name="cam_info_topic" default="/ardrone/camera_info" />	
+	<arg name="output_frame" default="/ardrone_base_frontcam" />
+	<arg name="bundle_files" default="$(find drone_gestures_demo)/bundles/box_3.xml $(find ardrone_swarm)/bundles/hat.xml" />
+
+	<node name="ar_track_alvar_individual" pkg="ar_track_alvar_idsia" type="individualMarkersNoKinect" respawn="true" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" >
+	<remap from="/ar_pose_marker" to="/ar_pose_marker_individual" />
+	</node>
+
+</launch>

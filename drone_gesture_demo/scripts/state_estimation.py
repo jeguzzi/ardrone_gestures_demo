@@ -5,11 +5,9 @@ import rospy
 import math
 
 from std_msgs.msg import String
-#from ar_track_alvar.msg import AlvarMarkers
 from ar_track_alvar_msgs_idsia.msg import AlvarMarkers
 from tf.transformations import euler_from_quaternion
 from ardrone_autonomy.msg import Navdata 
-#from ardrone_swarm.msg import Position
 from gesture_messages.msg import Position
 
 import utils

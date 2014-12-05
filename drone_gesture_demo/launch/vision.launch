@@ -1,0 +1,18 @@
+<!-- -->
+<launch>
+
+       	<node name="vision_node" pkg="drone_gestures_demo" type="vision" output="screen" clear_params="true">
+		<remap from="image_raw"  to="/ardrone/image_raw"/>
+		<remap from="switch_marker"  to="/ardrone/switch_marker"/>
+		<remap from="pose_marker"  to="/ar_pose_marker_individual"/>
+		<remap from="gestures"  to="/drone_gestures"/>
+
+		<param name="Hmin" value="15" />
+		<param name="Hmax" value="170" />
+		<param name="Smin" value="50" />
+		<param name="Smax" value="255" />
+		<param name="Vmin" value="50" />
+		<param name="Vmax" value="255" />
+        </node> 
+
+</launch>

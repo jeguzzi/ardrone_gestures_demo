@@ -6,7 +6,6 @@ import math
 
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Empty, Int16
-#from ardrone_swarm.msg import Position, Drone_info
 from gesture_messages.msg import Position, Drone_info
 
 import utils

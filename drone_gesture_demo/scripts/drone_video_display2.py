@@ -9,9 +9,7 @@ from sensor_msgs.msg import Image
 from sensor_msgs.msg import CameraInfo
 from std_msgs.msg import String, Int16
 from ardrone_autonomy.msg import Navdata 
-#from ar_track_alvar.msg import AlvarMarkers
 from ar_track_alvar_msgs_idsia.msg import AlvarMarkers
-#from ardrone_swarm.msg import Position
 from gesture_messages.msg import Position
 from tf.transformations import euler_from_quaternion
 
