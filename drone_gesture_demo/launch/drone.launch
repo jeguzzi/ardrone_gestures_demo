@@ -22,12 +22,14 @@
 	</node>	
 	
 	<!-- Launches the keyboard controller -->
-	<node name="keyboard_controller" pkg="drone_gestures_demo" type="keyboard_controller.py" required="true" 
-	 output = "screen" args = "1" >
+	<node name="keyboard_controller" pkg="drone_gestures_demo" type="keyboard_controller.py" required="true" output = "screen" >
+		 <remap from="gestures" to="/drone_gestures" />
 		 <remap from="/ardrone/out_info" to="/ardrone/drone_1_info" />
 		 <remap from="/ardrone/info_in_1" to="/ardrone/drone_2_info" />
 		 <remap from="/ardrone/info_in_2" to="/ardrone/drone_3_info" />
 		 <remap from="/ardrone/info_in_3" to="/ardrone/drone_4_info" />
+		 <param name="enable_keyboard_gestures" value="1" />
+		 <param name="id" value="1" />
 	</node>
 	
 	<node name="feedback_sound" pkg = "drone_gestures_demo" type = "sounds.py" required = "true" output="screen"/>

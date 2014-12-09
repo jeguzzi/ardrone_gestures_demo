@@ -72,16 +72,16 @@ class DroneController(object):
         self.subDrone4Info = rospy.Subscriber('/ardrone/info_in_3', Drone_info, self.receive_drone_4_info)
         self.subGesture = rospy.Subscriber('/ardrone/gest', Int8, self.receive_gesture)
         self.subFace = rospy.Subscriber('/ardrone/face', Int8, self.receive_face)
-        self.pubDroneInfo = rospy.Publisher('/ardrone/out_info', Drone_info)
-        self.pubLand    = rospy.Publisher('/ardrone/land', Empty)
-        self.pubTakeoff = rospy.Publisher('/ardrone/takeoff', Empty)
-        self.pubReset   = rospy.Publisher('/ardrone/reset', Empty)
-        self.pubBoxPosition = rospy.Publisher('/ardrone/box_position', Point)
-        self.pubResetPosition = rospy.Publisher('/ardrone/reset_position', String)
-        self.pubSwitchMarker = rospy.Publisher('/ardrone/switch_marker', Int16)
-        self.pubLanded = rospy.Publisher('/ardrone/landed', Empty)
+        self.pubDroneInfo = rospy.Publisher('/ardrone/out_info', Drone_info,queue_size=1)
+        self.pubLand    = rospy.Publisher('/ardrone/land', Empty, queue_size=1)
+        self.pubTakeoff = rospy.Publisher('/ardrone/takeoff', Empty, queue_size=1)
+        self.pubReset   = rospy.Publisher('/ardrone/reset', Empty, queue_size=1)
+        self.pubBoxPosition = rospy.Publisher('/ardrone/box_position', Point, queue_size=1)
+        self.pubResetPosition = rospy.Publisher('/ardrone/reset_position', String, queue_size=1)
+        self.pubSwitchMarker = rospy.Publisher('/ardrone/switch_marker', Int16, queue_size=1)
+        self.pubLanded = rospy.Publisher('/ardrone/landed', Empty, queue_size=1)
         
-        self.pubLed = rospy.Publisher('/drone1/led', led)
+        self.pubLed = rospy.Publisher('/drone1/led', led, queue_size=1)
         
         self.cur_marker = None
         self.marker_count = 0

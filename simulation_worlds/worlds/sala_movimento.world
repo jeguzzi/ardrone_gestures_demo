@@ -4,12 +4,18 @@
 
     <include>
 	<uri>model://ground_plane</uri>
-	<name>ground_planen</name>
+	<name>ground_plane</name>
         <pose>0.0 0.0 0 0 0 0</pose>
     </include>
     <include>
 	<uri>model://sun</uri>
     </include>
+
+    <!--include>
+	<uri>model://walls</uri>
+	<name>wall</name>
+	<pose>0.0 0.0 0 0 0 0</pose>
+    </include-->
 
 
   </world>

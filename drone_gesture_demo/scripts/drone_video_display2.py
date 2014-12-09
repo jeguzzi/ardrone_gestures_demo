@@ -214,22 +214,9 @@ class DroneVideoDisplay(QtGui.QMainWindow):
         self.subPosition = rospy.Subscriber('/ardrone/position',Position, self.receive_position)
         
         #self.subVideo   = rospy.Subscriber('/ardrone/image_raw', Image, self.receive_image)
-        self.pubGesture = rospy.Publisher('/ardrone/gesture', String)
+        self.pubGesture = rospy.Publisher('/ardrone/gesture', String, queue_size=1)
         
-        self.pubHmin = rospy.Publisher('/ardrone/Hmin', Int16)
-        self.pubHmax = rospy.Publisher('/ardrone/Hmax', Int16)
-        self.pubSmin = rospy.Publisher('/ardrone/Smin', Int16)
-        self.pubSmax = rospy.Publisher('/ardrone/Smax', Int16)
-        self.pubVmin = rospy.Publisher('/ardrone/Vmin', Int16)
-        self.pubVmax = rospy.Publisher('/ardrone/Vmax', Int16)
-        
-        self.subHmin = rospy.Subscriber('/ardrone/Hminc', Int16, self.receive_hmin)
-        self.subHmax = rospy.Subscriber('/ardrone/Hmaxc', Int16, self.receive_hmax)
-        self.subSmin = rospy.Subscriber('/ardrone/Sminc', Int16, self.receive_smin)
-        self.subSmax = rospy.Subscriber('/ardrone/Smaxc', Int16, self.receive_smax)
-        self.subVmin = rospy.Subscriber('/ardrone/Vminc', Int16, self.receive_vmin)
-        self.subVmax = rospy.Subscriber('/ardrone/Vmaxc', Int16, self.receive_vmax)
-        
+    
         # Holds the image frame received from the drone and later processed by the GUI
         self.image = None
         self.imageLock = Lock()
@@ -256,36 +243,11 @@ class DroneVideoDisplay(QtGui.QMainWindow):
         self.redrawTimer.timeout.connect(self.redraw_callback)
         self.redrawTimer.start(GUI_UPDATE_PERIOD)                  
     
-    def receive_hmin(self, msg):
-        print "received Hmin"
-        self.slider1.setValue(msg.data)
-        self.lbl1.setText("Hmin: %d" %msg.data)
-    
-    def receive_hmax(self, msg):
-        self.slider2.setValue(msg.data)
-        self.lbl2.setText("Hmax: %d" %msg.data)
-    
-    def receive_smin(self, msg):
-        self.slider3.setValue(msg.data)
-        self.lbl3.setText("Smin: %d" %msg.data)
-    
-    def receive_smax(self, msg):
-        self.slider4.setValue(msg.data)
-        self.lbl4.setText("Smax: %d" %msg.data)
-    
-    def receive_vmin(self, msg):
-        self.slider5.setValue(msg.data)
-        self.lbl5.setText("Vmin: %d" %msg.data)
-    
-    def receive_vmax(self, msg):
-        self.slider6.setValue(msg.data)
-        self.lbl6.setText("Vmax: %d" %msg.data)
-    
     def setValue1(self, value):
         if self.controller.low.drone_info.task != DroneTask.DemoGesture:
             self.slider1.setValue(value)
             self.lbl1.setText("Hmin: %d" %value)
-            self.pubHmin.publish(Int16(value))
+	    rospy.set_param("Hmin",value)
         
     def setMinimum1(self, value):
         self.slider1.setMinimum(value)
@@ -296,7 +258,7 @@ class DroneVideoDisplay(QtGui.QMainWindow):
         if self.controller.low.drone_info.task != DroneTask.DemoGesture:
             self.slider2.setValue(value)
             self.lbl2.setText("Hmax: %d" %value)
-            self.pubHmax.publish(Int16(value))
+	    rospy.set_param("Hmax",value)
         
     def setMinimum2(self, value):
         self.slider2.setMinimum(value)
@@ -307,7 +269,7 @@ class DroneVideoDisplay(QtGui.QMainWindow):
         if self.controller.low.drone_info.task != DroneTask.DemoGesture:
             self.slider3.setValue(value)
             self.lbl3.setText("Smin: %d" %value)
-            self.pubSmin.publish(Int16(value))
+	    rospy.set_param("Smin",value)
         
     def setMinimum3(self, value):
         self.slider3.setMinimum(value)
@@ -318,7 +280,7 @@ class DroneVideoDisplay(QtGui.QMainWindow):
         if self.controller.low.drone_info.task != DroneTask.DemoGesture:
             self.slider4.setValue(value)
             self.lbl4.setText("Smax: %d" %value)
-            self.pubSmax.publish(Int16(value))
+	    rospy.set_param("Smax",value)
         
     def setMinimum4(self, value):
         self.slider4.setMinimum(value)
@@ -329,7 +291,7 @@ class DroneVideoDisplay(QtGui.QMainWindow):
         if self.controller.low.drone_info.task != DroneTask.DemoGesture:
             self.slider5.setValue(value)
             self.lbl5.setText("Vmin: %d" %value)
-            self.pubVmin.publish(Int16(value))
+ 	    rospy.set_param("Vmin",value)
         
     def setMinimum5(self, value):
         self.slider5.setMinimum(value)
@@ -340,7 +302,7 @@ class DroneVideoDisplay(QtGui.QMainWindow):
         if self.controller.low.drone_info.task != DroneTask.DemoGesture:
             self.slider6.setValue(value)
             self.lbl6.setText("Vmax: %d" %value)
-            self.pubVmax.publish(Int16(value))
+	    rospy.set_param("Vmax",value)
         
     def setMinimum6(self, value):
         self.slider6.setMinimum(value)

@@ -25,6 +25,7 @@
 #include "../cvBlobsLib/include/BlobResult.h"
 #include "../cvBlobsLib/include/Blob.h"
 #include <gesture_messages/led.h>
+#include <gesture_messages/vision_gestures.h>
 #include <boost/circular_buffer.hpp>
 
 
@@ -78,7 +79,7 @@ class Detector{
 	// variables to publish the gesture messages
 	gesturestype vec_aux_max_potition, status = NO_BLOB; 
 	std::vector<int>::iterator vec_aux_max;
-	std_msgs::String output_label;
+	gesture_messages::vision_gestures output_label;
 
 	int Hmin;
 	int Hmax;
@@ -105,14 +106,14 @@ public: Detector():nh_(),it_(nh_),circularbufferMarker(10),gest_outputs (15,NO_B
 	switch_marker_sub = nh_.subscribe("switch_marker", 1, &Detector::receive_switch_marker, this);
 
 	//Node Publisher
-	gesture_message = nh_.advertise<std_msgs::String>("gestures", 1);
+	gesture_message = nh_.advertise<gesture_messages::vision_gestures>("gestures", 1);
 
 	// Map definition
 	gesturesnames[NO_BLOB]="no_blob";
 	gesturesnames[BIG_BLOB] = "big_blob";
 	gesturesnames[TOP_RIGHT_BLOB]="top_right_blob";
     	gesturesnames[TOP_LEFT_BLOB]="top_left_blob";
-    	gesturesnames[TOP_TWO_BLOBS]="top_two_blobs'";
+    	gesturesnames[TOP_TWO_BLOBS]="top_two_blobs";
     	gesturesnames[BOTTOM_TWO_BLOBS]="bottom_two_blobs";
     	gesturesnames[BOTTOM_BLOB]="bottom_blob";
       
@@ -167,8 +168,8 @@ public: Detector():nh_(),it_(nh_),circularbufferMarker(10),gest_outputs (15,NO_B
 			cv_bridge::CvImagePtr cv_ptr;
      			cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 			Mat image=cv_ptr->image;
-			imshow("test window",image);
-			waitKey(1);
+			//imshow("test window",image);
+			//waitKey(1);
 
 			// Update filter paramiters after obtain the image 
 			nh_.param("Hmin",Hmin,15);
@@ -351,7 +352,7 @@ gesturestype process_image(cv::Mat inputImage, bool marker_detected, double xc, 
 
 	if (*vec_aux_max > 7 && status!=vec_aux_max_potition){ 
 		
-		output_label.data = gesturesnames[vec_aux_max_potition];
+		output_label.gesture = gesturesnames[vec_aux_max_potition];
 		gesture_message.publish(output_label);
 		status=vec_aux_max_potition;
 	}

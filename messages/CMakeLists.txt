@@ -50,6 +50,7 @@ add_message_files(
    Drone_info.msg
    led.msg
    Position.msg
+   vision_gestures.msg
  )
 
 ## Generate services in the 'srv' folder

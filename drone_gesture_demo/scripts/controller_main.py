@@ -22,8 +22,8 @@ class ControllerMain(object):
     def __init__(self, id):
         
         self.low = DroneController(id)       
-        self.pubCommand = rospy.Publisher('/cmd_vel', Twist)
-        self.pubNobodyFound = rospy.Publisher('/ardrone/nobody_found', Empty)
+        self.pubCommand = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+        self.pubNobodyFound = rospy.Publisher('/ardrone/nobody_found', Empty, queue_size=1)
 
         # Setup regular publishing of control packets
         self.command = Twist()
