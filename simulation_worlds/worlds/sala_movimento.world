@@ -102,11 +102,11 @@
 	     </link>
     </model>
 
-        <model name='person_maker'>
+        <model name='cube_person'>
 	  <static>true</static>
-	     <link name='person_maker_link'>
+	     <link name='cube_person_link'>
 	       <pose>1 1 0.0 0 0 0</pose>
-	        <visual name='person_maker_visual'>
+	        <visual name='cube_person_visual'>
 		  <geometry>
 			  <mesh>
 			    <uri>file://Media/models/cube_person.dae</uri>
@@ -115,7 +115,7 @@
 		  </geometry>
 	        </visual>
 
-                <collision name="person_maker_collision">
+                <collision name="cube_person_collision">
 		  <geometry>
 			  <mesh>
 			    <uri>file://Media/models/stl/cube_person.stl</uri>
