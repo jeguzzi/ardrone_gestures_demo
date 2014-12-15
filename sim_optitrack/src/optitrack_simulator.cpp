@@ -16,11 +16,11 @@ ros::Publisher SimOptitrack_message = nh_.advertise<gesture_msgs::RigidBodyData>
 gesture_msgs::RigidBodyData data;
 
 int body_id;
-const std::string body_name = "quadrotor";
+std::string body_name;
 
 
 nh_.param("body_id",body_id,1);
-nh_.param("body_name",body_name,"quadrotor");
+nh_.param<std::string>("body_name",body_name,"quadrotor");
 
   
 while (nh_.ok()){
