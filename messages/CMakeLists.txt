@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(gesture_messages)
+project(gesture_msgs)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -7,6 +7,7 @@ project(gesture_messages)
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
+  geometry_msgs
   message_generation
 )
 
@@ -51,6 +52,7 @@ add_message_files(
    led.msg
    Position.msg
    vision_gestures.msg
+   RigidBodyData.msg
  )
 
 ## Generate services in the 'srv' folder

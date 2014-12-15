@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 		cv_bridge
 		message_runtime
 		image_transport
+		gesture_msgs
 )
 
 find_package(OpenCV REQUIRED)

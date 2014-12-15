@@ -30,7 +30,7 @@
 #include <pthread.h>
 #include <vector>
 #include <fstream>
-#include <gesture_messages/led.h>
+#include <gesture_msgs/led.h>
 using namespace std;
 using namespace cv;
 
@@ -609,7 +609,7 @@ class StateMachine
 	public: StateMachine(){
 				timer = nh_.createTimer(ros::Duration(0.1), &StateMachine::doProcess, this);
 				gesture_pub = nh_.advertise<std_msgs::Int8>("/ardrone/gest", 1);
-                led_pub = nh_.advertise<gesture_messages::led>("/drone1/led", 1);
+                led_pub = nh_.advertise<gesture_msgs::led>("/drone1/led", 1);
 				start = -1;
 				stage = STAGE_1;
 				client_led = nh_.serviceClient<ardrone_autonomy::LedAnim>("/ardrone/setledanimation");
@@ -622,7 +622,7 @@ class StateMachine
         	    return gesture;
 			}
 
-            gesture_messages::led prepare_word(gesture_messages::led& msg, int id){
+            gesture_msgs::led prepare_word(gesture_msgs::led& msg, int id){
                 msg.command = "off";
                 if (id == 1){
                     msg.duration = 0.5;
