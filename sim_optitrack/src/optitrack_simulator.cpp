@@ -2,20 +2,21 @@
 #include <string>
 #include <ros/ros.h>
 #include <gazebo_msgs/GetModelState.h>
-#include <gesture_msgs/RigidBodyData.h>
-#include "std_msgs/String.h"
+#include <sim_optitrack_msgs/SimRigidBodyData.h>
+
 
 
 int main(int argc, char** argv){
     
 ros::init(argc, argv, "optitrack_simulator");
 ros::NodeHandle nh_;
-ros::Rate rate(10.0);
+ros::Rate rate(120.0);
 
-ros::Publisher SimOptitrack_message = nh_.advertise<gesture_msgs::RigidBodyData>("sim_optitrack", 1);
-gesture_msgs::RigidBodyData data;
+ros::Publisher SimOptitrack_message = nh_.advertise<sim_optitrack_msgs::SimRigidBodyData>("sim_optitrack", 1);
+sim_optitrack_msgs::SimRigidBodyData data;
 
 int body_id;
+int mean_error = 0.0;
 std::string body_name;
 
 
@@ -27,13 +28,15 @@ while (nh_.ok()){
 
 	gazebo_msgs::GetModelState getmodelstate;
 	getmodelstate.request.model_name=body_name;
-	    
+
+	//Call ros_gazebo service    
 	ros::ServiceClient gmscl = nh_.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	gmscl.call(getmodelstate);
 	
-	//
+	// Id 
 	data.id = body_id;
 	data.name = body_name;	
+	data.mean_error = mean_error;
 
 	// Position
 	data.pose.position.x = getmodelstate.response.pose.position.x;

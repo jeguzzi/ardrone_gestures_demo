@@ -25,7 +25,7 @@
 #include "../cvBlobsLib/include/BlobResult.h"
 #include "../cvBlobsLib/include/Blob.h"
 #include <gesture_msgs/led.h>
-#include <gesture_msgs/vision_gestures.h>
+#include <gesture_msgs/VisionGestures.h>
 #include <boost/circular_buffer.hpp>
 
 
@@ -79,7 +79,7 @@ class Detector{
 	// variables to publish the gesture messages
 	gesturestype vec_aux_max_potition, status = NO_BLOB; 
 	std::vector<int>::iterator vec_aux_max;
-	gesture_msgs::vision_gestures output_label;
+	gesture_msgs::VisionGestures output_label;
 
 	int Hmin;
 	int Hmax;
@@ -106,7 +106,7 @@ public: Detector():nh_(),it_(nh_),circularbufferMarker(10),gest_outputs (15,NO_B
 	switch_marker_sub = nh_.subscribe("switch_marker", 1, &Detector::receive_switch_marker, this);
 
 	//Node Publisher
-	gesture_message = nh_.advertise<gesture_msgs::vision_gestures>("gestures", 1);
+	gesture_message = nh_.advertise<gesture_msgs::VisionGestures>("gestures", 1);
 
 	// Map definition
 	gesturesnames[NO_BLOB]="no_blob";
