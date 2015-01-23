@@ -17,7 +17,7 @@ std::vector<std::string> bodies_Vec;
   
 while (nh_.ok()){
 
-	nh_.getParam("bodies_list", bodies_Vec);
+	nh_.getParam("sim_optitrack_node/bodies_list", bodies_Vec);
 	gazebo_msgs::GetModelState getmodelstate;
 
 	optitrack_msgs::RigidBodies rigid_bodies_msg;
