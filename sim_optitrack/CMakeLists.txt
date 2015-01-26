@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
 	roscpp
 	rospy
 	std_msgs
-	sim_optitrack_msgs
+	optitrack_msgs
 )
 
 
@@ -27,7 +27,7 @@ catkin_package(CATKIN_DEPENDS
 		std_msgs
 		message_runtime 
 		geometry_msgs
-		sim_optitrack_msgs
+		optitrack_msgs
 )
 
 ###########
@@ -40,13 +40,13 @@ include_directories(
 )
 
 ## Declare a cpp executable
-add_executable(SimOptitrack_node src/optitrack_simulator.cpp)
+add_executable(sim_optitrack_node src/optitrack_simulator.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(SimOptitrack_node  ${catkin_EXPORTED_TARGETS} )
+add_dependencies(sim_optitrack_node  ${catkin_EXPORTED_TARGETS} )
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(SimOptitrack_node ${catkin_LIBRARIES})
+target_link_libraries(sim_optitrack_node ${catkin_LIBRARIES})
 
 

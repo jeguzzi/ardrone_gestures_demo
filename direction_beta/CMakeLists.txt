@@ -53,6 +53,9 @@ add_executable(direction_sim_node src/sim_node.cpp)
 add_executable(sim_control_direction_node src/sim_control_node.cpp)
 add_executable(control_direction_node src/control_node.cpp)
 
+add_dependencies(direction_sim_node direction_beta_generate_messages_cpp)
+add_dependencies(sim_control_direction_node direction_beta_generate_messages_cpp)
+add_dependencies(control_direction_node direction_beta_generate_messages_cpp)
 
 
 ## Specify libraries to link a library or executable target against

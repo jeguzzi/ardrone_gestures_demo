@@ -53,6 +53,9 @@ add_executable(detectorBig src/detectorNodeBig.cpp)
 add_executable(vision src/vision.cpp)
 #add_executable(cosa src/cosa.cpp)
 
+add_dependencies(detectorBig gesture_msgs_generate_messages_cpp)
+add_dependencies(vision gesture_msgs_generate_messages_cpp)
+
 #target_link_libraries(cosa ${catkin_LIBRARIES})
 target_link_libraries(detectorBig  ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a ${OpenCV_LIBRARIES} pthread)
 target_link_libraries(vision ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/cvBlobsLib/lib/libblob.a ${OpenCV_LIBRARIES} pthread)
