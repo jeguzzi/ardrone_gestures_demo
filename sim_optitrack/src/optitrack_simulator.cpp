@@ -49,31 +49,18 @@ int main(int argc, char** argv){
       ros::ServiceClient gmscl = nh.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
       gmscl.call(getmodelstate);
 
-      geometry_msgs::Pose pose;
-      pose.position.x = getmodelstate.response.pose.position.x;
-      pose.position.y = getmodelstate.response.pose.position.y;
-      pose.position.z = getmodelstate.response.pose.position.z;
-      pose.orientation.x = getmodelstate.response.pose.orientation.x;
-      pose.orientation.y = getmodelstate.response.pose.orientation.y;
-      pose.orientation.z = getmodelstate.response.pose.orientation.z;
-      pose.orientation.w = getmodelstate.response.pose.orientation.w;
-
-      
-      //std::cout<<name<<" : "<<getmodelstate.response<<std::endl;
-      //std::cout<<getmodelstate.response.pose<<std::endl<<pose<<std::endl;
-
       optitrack_msgs::RigidBodyData data;
       // Id 
       data.id = i;
       data.name =name;	
       data.mean_error =0.0;
-      data.pose=pose;
+      data.pose=getmodelstate.response.pose;
 
       rigid_bodies_msg.rigid_bodies.push_back(data);
 
       geometry_msgs::PoseStamped msg;
       msg.header=header;
-      msg.pose=pose;
+      msg.pose=getmodelstate.response.pose;
       pose_publishers[name].publish(msg);
     }
     rigid_bodies_publisher.publish(rigid_bodies_msg);
