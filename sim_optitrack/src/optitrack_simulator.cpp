@@ -40,6 +40,7 @@ int main(int argc, char** argv){
     //rigid_bodies_msg.header = header;
 	
     rigid_bodies_msg.header=header;
+    rigid_bodies_msg.fTimestamp=header.stamp.toSec();
 
     for(unsigned i=0; i < rigid_bodies_name.size(); i++) {
 
