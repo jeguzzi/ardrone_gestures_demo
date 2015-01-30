@@ -56,6 +56,7 @@ int main(int argc, char** argv){
       data.name =name;	
       data.mean_error =0.0;
       data.pose=getmodelstate.response.pose;
+      data.number_of_visible_markers=3; //-> to be interpreded as localized
 
       rigid_bodies_msg.rigid_bodies.push_back(data);
 
