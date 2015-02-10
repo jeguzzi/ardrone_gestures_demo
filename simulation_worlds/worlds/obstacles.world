@@ -81,8 +81,8 @@
     <!-- Walls Sala Movimento  -->
     <model name='walls'>
 	  <static>true</static>
-	     <link name='walls_link'>
-	        <pose>-0.5 -0.5 0 0 0 0</pose>
+	     <pose>-0.5 -0.5 0 0 0 0</pose>
+	        <link name='walls_link'>
 		<visual name='walls_visual'>
 		  <geometry>
 			  <mesh>
@@ -106,8 +106,8 @@
     <!-- Cones  -->
         <model name='yellow_cone'>
 	  <static>true</static>
-	     <link name='yellow_cone_link'>
-	       <pose>-4 0 0.0 0 0 0</pose>
+             <pose>-4 0 0.0 0 0 0</pose>
+	        <link name='yellow_cone_link'>
 	        <visual name='yellow_cone_visual'>
 		  <geometry>
 			  <mesh>
@@ -130,8 +130,8 @@
 
 	 <model name='green_cone'>
 	  <static>true</static>
-	     <link name='green_cone_link'>
-	       <pose>4 0 0.0 0 0 0</pose>
+              <pose>4 0 0.0 0 0 0</pose>
+	        <link name='green_cone_link'>
 	        <visual name='green_cone_visual'>
 		  <geometry>
 			  <mesh>
@@ -155,8 +155,8 @@
 
 	 <model name='blue_cone'>
 	  <static>true</static>
-	     <link name='blue_cone_link'>
-	       <pose>0 -4 0.0 0 0 0</pose>
+             <pose>0 -4 0.0 0 0 0</pose>
+	        <link name='blue_cone_link'>
 	        <visual name='blue_cone_visual'>
 		  <geometry>
 			  <mesh>
@@ -179,8 +179,8 @@
 
 	<model name='black_cone'>
 	  <static>true</static>
-	     <link name='black_cone_link'>
-	       <pose>0 4 0.0 0 0 0</pose>
+             <pose>0 4 0.0 0 0 0</pose>
+	        <link name='black_cone_link'>
 	        <visual name='black_cone_visual'>
 		  <geometry>
 			  <mesh>
@@ -205,8 +205,8 @@
 
 	<model name='pole_1'>
 	  <static>true</static>
-	     <link name='pole_1_link'>
-	       <pose>0 1 0.0 0 0 0</pose>
+            <pose>0 1 0.0 0 0 0</pose>
+	        <link name='pole_1_link'>
 	        <visual name='pole_1_visual'>
 		  <geometry>
 			  <mesh>
@@ -230,8 +230,8 @@
 
 	<model name='pole_2'>
 	  <static>true</static>
-	     <link name='pole_2_link'>
-	       <pose>-2 0 0.0 0 0 0</pose>
+	     <pose>-2 0 0.0 0 0 0</pose>
+	        <link name='pole_2_link'>
 	        <visual name='pole_2_visual'>
 		  <geometry>
 			  <mesh>
@@ -255,8 +255,8 @@
 
 	<model name='pole_3'>
 	  <static>true</static>
-	     <link name='pole_3_link'>
-	       <pose>2 2 0.0 0 0 0</pose>
+	     <pose>2 2 0.0 0 0 0</pose>
+	        <link name='pole_3_link'>
 	        <visual name='pole_3_visual'>
 		  <geometry>
 			  <mesh>
@@ -279,8 +279,8 @@
 
 	<model name='pole_4'>
 	  <static>true</static>
-	     <link name='pole_4_link'>
-	       <pose>-1 3 0.0 0 0 0</pose>
+             <pose>-1 3 0.0 0 0 0</pose>
+	        <link name='pole_4_link'>
 	        <visual name='pole_4_visual'>
 		  <geometry>
 			  <mesh>
@@ -303,8 +303,8 @@
 	
 	<model name='pole_5'>
 	  <static>true</static>
-	     <link name='pole_5_link'>
-	       <pose>-1 -3 0.0 0 0 0</pose>
+	     <pose>-1 -3 0.0 0 0 0</pose>
+	        <link name='pole_5_link'>
 	        <visual name='pole_5_visual'>
 		  <geometry>
 			  <mesh>
@@ -327,8 +327,8 @@
 
 	<model name='pole_6'>
 	  <static>true</static>
-	     <link name='pole_6_link'>
-	       <pose>2 -2 0.0 0 0 0</pose>
+             <pose>2 -2 0.0 0 0 0</pose>
+	        <link name='pole_6_link'>
 	        <visual name='pole_6_visual'>
 		  <geometry>
 			  <mesh>
@@ -351,8 +351,8 @@
 
 		<model name='pole_7'>
 	  <static>true</static>
-	     <link name='pole_7_link'>
-	       <pose>0.5 -1.5 0.0 0 0 0</pose>
+	     <pose>0.5 -1.5 0.0 0 0 0</pose>
+	        <link name='pole_7_link'>
 	        <visual name='pole_7_visual'>
 		  <geometry>
 			  <mesh>

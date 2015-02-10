@@ -1,0 +1,6 @@
+<!-- -->
+<launch>
+	<node name="sim_optitrack_node" pkg="sim_optitrack" type="SimOptitrack_node" output="screen">
+		<param name="bodies_list" value="[quadrotor]" />
+	</node>
+</launch>

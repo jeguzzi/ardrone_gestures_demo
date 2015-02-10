@@ -11,14 +11,16 @@
 #include <optitrack_msgs/RigidBodyData.h>
 #include <optitrack_msgs/RigidBodies.h>
 #include <direction_beta/direction_msgs.h>
+#include <ardrone_autonomy/Navdata.h>
 # define PI           3.14159265358979323846
 
 // Some global variables
-float positionX, positionY, r, directionX, directionY;
 float quaternion[4] = {0,0,0,0};
 geometry_msgs::Twist velocityMsg;
 direction_beta::direction_msgs publish_data;
-double DroneYaw;
+double DroneAltitude, DroneYaw, DroneX, DroneY, KPitch, KRoll;
+double PointsDroneFrame[4] = {0.0,0.0,0.0,0.0};
+double virtual_fence[4] = {5.0,-3.8,4.2,-3.9}; // [maxX, minX, maxY, minY]
 
 
 double quaternion2angles(float quaternion[]){
@@ -34,20 +36,26 @@ return Dyaw;
 // Define callbacks
 void hasReceivedModelState(const optitrack_msgs::RigidBodies::ConstPtr& msg){
 	
-  	positionX=msg->rigid_bodies[0].pose.position.x; 
-	positionY=msg->rigid_bodies[0].pose.position.y;/**/
+  	DroneX=msg->rigid_bodies[0].pose.position.x; 
+	DroneY=msg->rigid_bodies[0].pose.position.y;/**/
 	quaternion[0] = msg->rigid_bodies[0].pose.orientation.x;
 	quaternion[1] = msg->rigid_bodies[0].pose.orientation.y;
 	quaternion[2] = msg->rigid_bodies[0].pose.orientation.z;
 	quaternion[3] = msg->rigid_bodies[0].pose.orientation.w;
 	DroneYaw=quaternion2angles(quaternion);/**/
 	publish_data.DroneYaw=DroneYaw;
-	publish_data.CurrentX=positionX;
-	publish_data.CurrentY=positionY;
+	publish_data.DroneX=DroneX;
+	publish_data.DroneY=DroneY;
 
   return;
 }
 
+void hasReceivedNavdataInfo(const ardrone_autonomy::NavdataConstPtr msg){
+    	DroneAltitude = (msg->altd)/1000.0;
+	publish_data.DroneAltitude = DroneAltitude;
+}
+
+// This function calculates the Yaw obtained after compute the vector between the actual position and the target point
 double NewYawAngle(double taX, double taY){
 
 	double direction_angle;
@@ -55,7 +63,7 @@ double NewYawAngle(double taX, double taY){
 	return direction_angle;
 } 
 
-void ControlYawDirection(double targetA){
+void ControlYaw(double targetA){
 	double currentA, betha, tetha, K;
 	K=80;
 	currentA = DroneYaw;
@@ -90,6 +98,54 @@ void ControlYawDirection(double targetA){
 	velocityMsg.angular.z=std::max(-1.2,velocityMsg.angular.z);
 	publish_data.YawVel=velocityMsg.angular.z;	
 } 
+
+void WorldToDroneframe(double targetX, double targetY, double angle){
+
+	angle=(PI*angle)/180;
+	
+	PointsDroneFrame[0]=cos(angle)*DroneX+sin(angle)*DroneY;
+	PointsDroneFrame[1]=-sin(angle)*DroneX+cos(angle)*DroneY;
+	PointsDroneFrame[2]=cos(angle)*targetX+sin(angle)*targetY;
+	PointsDroneFrame[3]=-sin(angle)*targetX+cos(angle)*targetY;
+
+	publish_data.FrameDroneX=PointsDroneFrame[0];
+	publish_data.FrameDroneY=PointsDroneFrame[1];
+	publish_data.FrameTargetX=PointsDroneFrame[2];
+	publish_data.FrameTargetY=PointsDroneFrame[3];
+}
+
+void ControlPitch(double actualX, double targetX, double Kp){
+	
+	//double currentX = DroneX;
+	velocityMsg.linear.x = (targetX-actualX)/Kp;
+	// Limit velocity
+	velocityMsg.linear.x=std::min(1.0,velocityMsg.linear.x);
+	velocityMsg.linear.x=std::max(-1.0,velocityMsg.linear.x);
+
+	publish_data.PitchVel=velocityMsg.linear.x;	
+} 
+
+void ControlRoll(double actualY, double targetY, double Kp){
+
+	//double currentY = DroneY;
+	velocityMsg.linear.y = (targetY-actualY)/Kp;
+	// Limit velocity
+	velocityMsg.linear.y=std::min(1.0,velocityMsg.linear.y);
+	velocityMsg.linear.y=std::max(-1.0,velocityMsg.linear.y);
+	publish_data.RollVel=velocityMsg.linear.y;	
+} 
+
+void ControlAltitude(double actualAlt, double targetAlt){
+
+	double K = 4;
+	//double currentY = DroneY;
+	velocityMsg.linear.z = (targetAlt-actualAlt)/K;
+	// Limit velocity
+	velocityMsg.linear.y=std::min(0.5,velocityMsg.linear.z);
+	velocityMsg.linear.y=std::max(-0.5,velocityMsg.linear.z);
+	publish_data.RollVel=velocityMsg.linear.z;	
+} 
+	
 		
 int main(int argc, char** argv){
     
@@ -100,48 +156,45 @@ ros::Rate rate(20.0);
 velocityMsg.linear.z = 0.0;
 velocityMsg.linear.y = 0.0;
 
-double NewYaw = 0.0;
-
-std::vector<double> new_position (2,0);
-std::vector<double> last_position (2,0);
+double TargetAltitude = 1.0, TargetYaw = 0.0;
+std::vector<double> TargetPoint (2,0);
+double Kp = (abs(virtual_fence[0])+abs(virtual_fence[1]))/4.0 ;
 
 
 ros::Subscriber optitrack_sub_=nh_.subscribe("/optitrack/rigid_bodies", 1, hasReceivedModelState);
 ros::Publisher vel_pub_=nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 ros::Publisher direction_pub_=nh_.advertise<direction_beta::direction_msgs>("/direction_outputs", 1);
-ros::Publisher reset_pub_=nh_.advertise<std_msgs::Empty>("/ardrone/reset",1);
+ros::Publisher land_pub_=nh_.advertise<std_msgs::Empty>("/ardrone/land",1);
+ros::Subscriber alt_sub = nh_.subscribe("/ardrone/navdata", 1, hasReceivedNavdataInfo);
 std_msgs::Empty EmergencyMsg;
-double test;
+
 
 	while (ros::ok()){
-	nh_.getParam("new_position",new_position);
+	nh_.getParam("new_position",TargetPoint);
+	nh_.getParam("new_yaw_angle",TargetYaw);
+	nh_.getParam("new_altitude",TargetAltitude);
+
+	publish_data.TargetYaw=TargetYaw;
+	publish_data.TargetX=TargetPoint[0];
+	publish_data.TargetY=TargetPoint[1];
+	publish_data.TargetAltitude=TargetAltitude;
 	//std::cout << "En el while" << std::endl;
 
-	if (positionX>5.0 ||  positionX<-3.8 || positionY>4.2 || positionY<-3.9){
+	if (DroneX>virtual_fence[0] ||  DroneX<virtual_fence[1] || DroneY>virtual_fence[2] || DroneY<virtual_fence[3]){
 		//std::cout << "En 1" << std::endl;
 		std::cout << "Emergency! Drone out of fence" << std::endl;
-		reset_pub_.publish(EmergencyMsg);
-		publish_data.mode = 0;
-		}
-	else if (new_position[0] != last_position[0] || new_position[1] != last_position[1]){
-		//std::cout << "En 2" << std::endl;
-		NewYaw = NewYawAngle(new_position[0],new_position[1]);
-		publish_data.NewYaw=NewYaw;
-		publish_data.NewX=new_position[0];
-		publish_data.NewY=new_position[1];
-		publish_data.LastX=last_position[0];
-		publish_data.LastY=last_position[1];
-
-		//std::cout << "NewX " << new_position[0] << " NewY " << new_position[1] << " NewYaw " << NewYaw << std::endl;
-		last_position[0]=new_position[0];
-		last_position[1]=new_position[1];
-		publish_data.mode = 1;
+		land_pub_.publish(EmergencyMsg);
+		publish_data.mode = "Emergency";
 		}
 	else{
 		//std::cout << "En 3" << std::endl;
-		ControlYawDirection(NewYaw);
+		ControlYaw(TargetYaw);
+		WorldToDroneframe(TargetPoint[0], TargetPoint[1], DroneYaw);
+		ControlPitch(/*TargetPoint[0]*/PointsDroneFrame[0],PointsDroneFrame[2],Kp);
+		ControlRoll(/*TargetPoint[1]*/PointsDroneFrame[1],PointsDroneFrame[3],Kp);
+		ControlAltitude(DroneAltitude, TargetAltitude);
 		vel_pub_.publish(velocityMsg);
-		publish_data.mode = 2;
+		publish_data.mode = "Drone controlling";
 		}
 
 	direction_pub_.publish(publish_data);

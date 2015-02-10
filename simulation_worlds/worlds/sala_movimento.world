@@ -79,9 +79,9 @@
     </light>
 
     <model name='walls'>
-	  <static>true</static>
-	     <link name='walls_link'>
-	        <pose>0 0 0 0 0 0</pose>
+       	   <static>true</static>
+	      <pose>0 0 0 0 0 0</pose> 
+		<link name='walls_link'> 
 		<visual name='walls_visual'>
 		  <geometry>
 			  <mesh>
@@ -102,10 +102,10 @@
 	     </link>
     </model>
 
-        <model name='cube_person'>
+    <!--model name='cube_person'>
 	  <static>true</static>
-	     <link name='cube_person_link'>
-	       <pose>1 1 0.0 0 0 0</pose>
+	    <pose>1 1 0.0 0 0 0</pose>
+	        <link name='cube_person_link'>
 	        <visual name='cube_person_visual'>
 		  <geometry>
 			  <mesh>
@@ -124,7 +124,7 @@
 		  </geometry>
 		</collision>
 	     </link>
-    </model>	
+    </model-->	
 
   </world>
 </sdf>
