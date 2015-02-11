@@ -17,9 +17,9 @@
 float quaternion[4] = {0,0,0,0};
 geometry_msgs::Twist velocityMsg;
 direction_beta::direction_msgs publish_data;
-double DroneAltitude, DroneYaw, DroneX, DroneY, KPitch, KRoll,errorAntPitch,errorAntRoll;
+double DroneAltitude, DroneYaw, DroneX, DroneY, KPitch, KRoll,errorAntPitch,errorAntRoll, VxDrone, VyDrone;
 double PointsDroneFrame[4] = {0.0,0.0,0.0,0.0};
-std::vector<double> virtual_fence (4); // [maxX, minX, maxY, minY]
+std::vector<double> virtual_fence (5); // [maxX, minX, maxY, minY, maxAltitude]
 
 
 double quaternion2angles(float quaternion[]){
@@ -52,10 +52,12 @@ void hasReceivedModelState(const optitrack_msgs::RigidBodies::ConstPtr& msg){
   return;
 }
 
-/*void hasReceivedNavdataInfo(const ardrone_autonomy::NavdataConstPtr msg){
-    	DroneAltitude = (msg->altd)/1000.0;
-	publish_data.DroneAltitude = DroneAltitude;
-} */
+void hasReceivedNavdataInfo(const ardrone_autonomy::NavdataConstPtr msg){
+    	//DroneAltitude = (msg->altd)/1000.0;
+	VxDrone = msg->vx;
+	VyDrone = msg->vy;
+	//publish_data.DroneAltitude = DroneAltitude;
+} 
 
 
 // This function calculates the Yaw obtained after compute the vector between the actual position and the target point
@@ -150,7 +152,7 @@ void ControlAltitude(double actualAlt, double targetAlt){
 	// Limit velocity
 	velocityMsg.linear.z=std::min(1.0,velocityMsg.linear.z);
 	velocityMsg.linear.z=std::max(-1.0,velocityMsg.linear.z);	
-} 
+}
 	
 		
 int main(int argc, char** argv){
@@ -170,7 +172,8 @@ ros::Subscriber optitrack_sub_=nh_.subscribe("/optitrack/rigid_bodies", 1, hasRe
 ros::Publisher vel_pub_=nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 ros::Publisher direction_pub_=nh_.advertise<direction_beta::direction_msgs>("/direction_outputs", 1);
 ros::Publisher reset_pub_=nh_.advertise<std_msgs::Empty>("/ardrone/reset",1);
-//ros::Subscriber alt_sub = nh_.subscribe("/ardrone/navdata", 1, hasReceivedNavdataInfo);
+ros::Publisher land_pub_=nh_.advertise<std_msgs::Empty>("/ardrone/land",1);
+ros::Subscriber alt_sub = nh_.subscribe("/ardrone/navdata", 1, hasReceivedNavdataInfo);
 std_msgs::Empty EmergencyMsg;
 ros::Duration(5).sleep();
 
@@ -192,10 +195,15 @@ ros::Duration(5).sleep();
 
 
 	if (DroneX){
-		if (DroneX>virtual_fence[0]||  DroneX<virtual_fence[1]|| DroneY>virtual_fence[2] || DroneY<virtual_fence[3]){
+		if (DroneX>virtual_fence[0]||  DroneX<virtual_fence[1]|| DroneY>virtual_fence[2] || DroneY<virtual_fence[3] || DroneAltitude>virtual_fence[4]){
 
 			std::cout << "Emergency! Drone out of fence" << std::endl;
-			reset_pub_.publish(EmergencyMsg);
+			
+			if (abs(VxDrone)<150 || abs(VyDrone)<150)
+				land_pub_.publish(EmergencyMsg);	
+			else
+				reset_pub_.publish(EmergencyMsg);
+		
 			publish_data.mode = "Emergency";
 			ros::Duration(0.5).sleep();
 			break;
