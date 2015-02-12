@@ -11,13 +11,14 @@
 #include <optitrack_msgs/RigidBodies.h>
 #include <direction_beta/direction_msgs.h>
 #include <ardrone_autonomy/Navdata.h>
+#include "ardrone_autonomy/LedAnim.h"
 # define PI           3.14159265358979323846
 
 // Some global variables
 float quaternion[4] = {0,0,0,0};
 geometry_msgs::Twist velocityMsg;
 direction_beta::direction_msgs publish_data;
-double DroneAltitude, DroneYaw, DroneX, DroneY, KPitch, KRoll,errorAntPitch,errorAntRoll, VxDrone, VyDrone;
+double DroneAltitude, DroneYaw, DroneX, DroneY, KPitch, KRoll,errorAntPitch,errorAntRoll, VxDrone, VyDrone, DroneBattery;
 double PointsDroneFrame[4] = {0.0,0.0,0.0,0.0};
 std::vector<double> virtual_fence (5); // [maxX, minX, maxY, minY, maxAltitude]
 
@@ -56,6 +57,7 @@ void hasReceivedNavdataInfo(const ardrone_autonomy::NavdataConstPtr msg){
     	//DroneAltitude = (msg->altd)/1000.0;
 	VxDrone = msg->vx;
 	VyDrone = msg->vy;
+	DroneBattery = msg->batteryPercent;
 	//publish_data.DroneAltitude = DroneAltitude;
 } 
 
@@ -167,6 +169,7 @@ velocityMsg.linear.x = 0.0;
 
 double TargetAltitude = 1.0, TargetYaw = 0.0, Kp = 0.2, Kd = 0.0, velocity_limit=0.4, fs=20;
 std::vector<double> TargetPoint (2,0);
+int  BatteryFlag = 0;
 
 ros::Subscriber optitrack_sub_=nh_.subscribe("/optitrack/rigid_bodies", 1, hasReceivedModelState);
 ros::Publisher vel_pub_=nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
@@ -174,8 +177,16 @@ ros::Publisher direction_pub_=nh_.advertise<direction_beta::direction_msgs>("/di
 ros::Publisher reset_pub_=nh_.advertise<std_msgs::Empty>("/ardrone/reset",1);
 ros::Publisher land_pub_=nh_.advertise<std_msgs::Empty>("/ardrone/land",1);
 ros::Subscriber alt_sub = nh_.subscribe("/ardrone/navdata", 1, hasReceivedNavdataInfo);
+
+
+ros::ServiceClient drone_led =  nh_.serviceClient<ardrone_autonomy::LedAnim>("/ardrone/setledanimation");
 std_msgs::Empty EmergencyMsg;
 ros::Duration(5).sleep();
+
+/* Difinition of the led animation parameters */
+ardrone_autonomy::LedAnim srv;
+srv.request.freq = fs/5;
+srv.request.duration = 0;
 
 	while (ros::ok()){
 	nh_.getParam("/control_drone_node/new_position",TargetPoint);
@@ -195,14 +206,17 @@ ros::Duration(5).sleep();
 
 
 	if (DroneX){
-		if (DroneX>virtual_fence[0]||  DroneX<virtual_fence[1]|| DroneY>virtual_fence[2] || DroneY<virtual_fence[3] || DroneAltitude>virtual_fence[4]){
+		if (DroneX>virtual_fence[0] ||  DroneX<virtual_fence[1] || DroneY>virtual_fence[2] || DroneY<virtual_fence[3] || DroneAltitude>virtual_fence[4]){
 
 			std::cout << "Emergency! Drone out of fence" << std::endl;
 			
-			if (abs(VxDrone)<150 || abs(VyDrone)<150)
-				land_pub_.publish(EmergencyMsg);	
-			else
+			if (abs(VxDrone)<200 || abs(VyDrone)<200)
+				land_pub_.publish(EmergencyMsg);
+			else{
 				reset_pub_.publish(EmergencyMsg);
+				srv.request.type = 7; // RED
+				drone_led.call(srv);
+			}
 		
 			publish_data.mode = "Emergency";
 			ros::Duration(0.5).sleep();
@@ -224,6 +238,19 @@ ros::Duration(5).sleep();
 	else
 		std::cout << "Waiting for optitrack data" << std::endl;
 
+	/* Led animation to alert about low battery */
+	if(DroneBattery <= 20 && DroneBattery > 10 && BatteryFlag == 0){
+		srv.request.type = 0;  //BLINK_GREEN_RED
+		drone_led.call(srv);
+		BatteryFlag = 1;
+	}
+	else if(DroneBattery <= 10 && BatteryFlag == 1){
+		srv.request.type = 2; // BLINK_RED
+		drone_led.call(srv);
+		BatteryFlag = 0;
+	}
+		
+	
    	ros::spinOnce(); // if you were to add a subscription into this application, and did not have ros::spinOnce() here, your callbacks would never get called.
     	rate.sleep();
     }
