@@ -1,7 +1,7 @@
 <!-- --> 
 <launch>
 
-	<node name="control_drone_node" pkg="direction_beta" type="drone_control_direction" output="screen">
+	<node name="control_drone_node" pkg="direction_beta" type="control_drone_position_node" output="screen">
 		      <param name="Kp" value="0.25"/>
 		      <param name="Kd" value="0.25"/>
 		      <param name="velocity_limit" value="0.2"/>
