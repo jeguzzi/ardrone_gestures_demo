@@ -174,7 +174,7 @@ int  BatteryFlag = 0;
 
 ros::Subscriber optitrack_sub_=nh_.subscribe("/optitrack/rigid_bodies", 1, hasReceivedModelState);
 ros::Publisher vel_pub_=nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-ros::Publisher direction_pub_=nh_.advertise<gesture_msgs::drone_control_info>("/drone_control_ouputs", 1);
+ros::Publisher drone_info_pub_=nh_.advertise<gesture_msgs::drone_control_info>("/drone_control_info", 1);
 ros::Publisher reset_pub_=nh_.advertise<std_msgs::Empty>("/ardrone/reset",1);
 ros::Publisher land_pub_=nh_.advertise<std_msgs::Empty>("/ardrone/land",1);
 ros::Subscriber alt_sub = nh_.subscribe("/ardrone/navdata", 1, hasReceivedNavdataInfo);
@@ -234,7 +234,7 @@ srv.request.duration = 0;
 			publish_data.mode = "Drone controlling";
 			}
 	
-		direction_pub_.publish(publish_data);
+		drone_info_pub_.publish(publish_data);
 		}
 	else
 		std::cout << "Waiting for optitrack data" << std::endl;

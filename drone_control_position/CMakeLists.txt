@@ -29,13 +29,14 @@ include_directories(${catkin_INCLUDE_DIRS})
 ## Declare a cpp executable
 add_executable(sim_control_drone_position_node src/sim_control_node.cpp)
 add_executable(control_drone_position_node src/control_node.cpp)
+add_executable(sim_following_leader_node src/sim_following_leader.cpp)
 
 add_dependencies(sim_control_drone_position_node gesture_msgs_generate_messages_cpp)
 add_dependencies(control_drone_position_node gesture_msgs_generate_messages_cpp)
+add_dependencies(sim_following_leader_node gesture_msgs_generate_messages_cpp)
 
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(sim_control_drone_position_node ${catkin_LIBRARIES})
 target_link_libraries(control_drone_position_node ${catkin_LIBRARIES})
-
-
+target_link_libraries(sim_following_leader_node ${catkin_LIBRARIES})
