@@ -1,0 +1,13 @@
+<!-- --> 
+<launch>
+
+	<node name="drone_control_node" pkg="drone_control_position" type="following_leader_node" output="screen">
+	   	      <param name="new_altitude" value="1.0"/>
+		      <param name="leader_distance" value="1.5"/>
+		      <rosparam>Kd:  [0.25, 0.25]</rosparam>  <!-- [pitch, roll] -->
+		      <rosparam>Kp:  [0.25, 0.25, 0.0125, 0.25]</rosparam>  <!-- [pitch, roll, yaw, altitude] -->
+		      <rosparam>velocity_limit:  [0.2, 0.2, 1.0, 1.0]</rosparam>  <!-- [pitch, roll, yaw, altitude] -->
+		      <rosparam>virtual_fence:  [3.0, -2.45, 1.85, -2.4, 2.25]</rosparam>  <!-- [maxX, minX, maxY, minY, maxAltitude] -->
+	</node>
+
+</launch>

@@ -1,0 +1,17 @@
+<!-- --> 
+<launch>
+
+	<node name="optitrack" pkg="sim_optitrack" type="sim_optitrack_node" output="screen">
+			<rosparam>rigid_bodies_name:  [quadrotor,leader]</rosparam>
+	</node>
+
+	<node name="drone_control_node" pkg="drone_control_position" type="sim_following_leader_node" output="screen">
+		      <param name="new_altitude" value="1.0"/>
+		      <param name="leader_distance" value="1.5"/>
+		      <rosparam>Kd:  [0.5, 0.5]</rosparam>  <!-- [pitch, roll] -->
+		      <rosparam>Kp:  [0.5, 0.5, 0.05, 0.25]</rosparam>  <!-- [pitch, roll, yaw, altitude] -->
+		      <rosparam>velocity_limit:  [1.0, 1.0, 1.0, 1.0]</rosparam>  <!-- [pitch, roll, yaw, altitude] -->
+		      <rosparam>virtual_fence:  [10.0, -10.0, 10.0, -10.0, 2.25]</rosparam>  <!-- [maxX, minX, maxY, minY, maxAltitude] -->
+	</node>
+
+</launch>
