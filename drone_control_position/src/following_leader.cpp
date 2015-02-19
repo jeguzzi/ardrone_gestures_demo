@@ -70,6 +70,11 @@ void hasReceivedModelState(const optitrack_msgs::RigidBodies::ConstPtr& msg){
 	leader_publish_data.LeaderY = Leader_info[1];
 	leader_publish_data.LeaderZ = Leader_info[2];
 
+	publish_data.TargetYaw=Leader_info[3];
+	publish_data.TargetX=Leader_info[0];
+	publish_data.TargetY=Leader_info[1];
+	publish_data.TargetAltitude=Leader_info[2];
+
   return;
 }
 
@@ -187,8 +192,8 @@ velocityMsg.linear.z = 0.0;
 velocityMsg.linear.y = 0.0;
 velocityMsg.linear.x = 0.0;
 
-double TargetAltitude = 1.0, TargetYaw = 0.0, fs=20, dLeader = 1.5;
-std::vector<double> TargetPoint (2,0), Kp (4,0), Kd (2,0), velocity_limit(4,0);
+double fs=20, dLeader = 1.5;
+std::vector<double> Kp (4,0), Kd (2,0), velocity_limit(4,0);
 int  BatteryFlag = 0;
 
 ros::Subscriber optitrack_sub_=nh_.subscribe("/optitrack/rigid_bodies", 1, hasReceivedModelState);
@@ -209,20 +214,13 @@ ardrone_autonomy::LedAnim srv;
 srv.request.freq = fs/5;
 srv.request.duration = 0;
 
-	while (ros::ok()){
-	nh_.getParam("/drone_control_node/new_position",TargetPoint);
-	nh_.getParam("/drone_control_node/new_yaw",TargetYaw);
-	nh_.getParam("/drone_control_node/new_altitude",TargetAltitude);	
+	while (ros::ok()){	
 	nh_.getParam("/drone_control_node/Kp",Kp);
 	nh_.getParam("/drone_control_node/Kd",Kd);
 	nh_.getParam("/drone_control_node/virtual_fence",virtual_fence);
 	nh_.getParam("/drone_control_node/velocity_limit",velocity_limit);
 
-
-	publish_data.TargetYaw=TargetYaw;
-	publish_data.TargetX=TargetPoint[0];
-	publish_data.TargetY=TargetPoint[1];
-	publish_data.TargetAltitude=TargetAltitude;
+	
 	//std::cout << "En el while" << std::endl;
 
 
@@ -246,10 +244,10 @@ srv.request.duration = 0;
 		else{
 
 			WorldToDroneframe(Leader_info[0], Leader_info[1], Drone_info[3]);
-			ControlPitch(PointsDroneFrame[0]-dLeader,PointsDroneFrame[2],velocity_limit[0],Kp[0],Kd[0],fs);
+			ControlPitch(PointsDroneFrame[0]+dLeader,PointsDroneFrame[2],velocity_limit[0],Kp[0],Kd[0],fs);
 			ControlRoll(PointsDroneFrame[1],PointsDroneFrame[3],velocity_limit[1],Kp[1],Kd[1],fs);
 			ControlYaw(Leader_info[3],velocity_limit[2],Kp[2]);
-			ControlAltitude(Drone_info[2], TargetAltitude,velocity_limit[3],Kp[3]);
+			ControlAltitude(Drone_info[2], Leader_info[2],velocity_limit[3],Kp[3]);
 			vel_pub_.publish(velocityMsg);
 			publish_data.mode = "Drone controlling";
 			}
