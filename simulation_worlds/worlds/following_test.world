@@ -1,0 +1,108 @@
+<?xml version="1.0"?> 
+<sdf version="1.4">
+  <world name="sala_movimento">
+
+    <scene>
+      <sky>
+        <clouds>
+          <speed>12</speed>
+        </clouds>
+      </sky>
+    </scene>
+
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>  
+      <pose>0.5 0.5 5 0 0 0</pose>
+    </include>
+
+    <!-- Artificial lights  -->
+
+    <light name='ligth_1' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0.5 0.5 2.5 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>204 204 204 255</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-2.0 -2.0 -0.5</direction>
+    </light>
+
+   <light name='ligth_2' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0.5 0.5 2.5 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>204 204 204 255</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-2.0 2.0 -0.5</direction>
+    </light>
+
+    <light name='ligth_3' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0.5 0.5 2.5 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>204 204 204 255</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>2.0 2.0 -0.5</direction>
+    </light>
+
+    <light name='ligth_4' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0.5 0.5 2.5 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>204 204 204 255</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>2.0 -2.0 -0.5</direction>
+    </light>
+
+
+
+    <!--model name='leader'>
+	  <static>true</static>
+	    <pose>1 1 0.0 0 0 0</pose>
+	        <link name='leader_link'>
+	        <visual name='leader_visual'>
+		  <geometry>
+			  <mesh>
+			    <uri>file://Media/models/person_marker.dae</uri>
+			    <scale>1 1 1</scale>
+			   </mesh>
+		  </geometry>
+	        </visual>
+
+                <collision name="leader_collision">
+		  <geometry>
+			  <mesh>
+			    <uri>file://Media/models/stl/person_marker.stl</uri>
+			    <scale>1 1 1</scale>
+			   </mesh>
+		  </geometry>
+		</collision>
+	     </link>
+    </model-->	
+
+  </world>
+</sdf>
