@@ -1,24 +1,12 @@
 
-float32 TargetYaw
-float32 DroneYaw
-float32 YawVel
-float32 PitchVel
-float32 RollVel
-
-float32 DroneX
-float32 TargetX
-float32 FrameDroneX
-float32 FrameTargetX
-
-float32 DroneY
-float32 TargetY
-float32 FrameDroneY
-float32 FrameTargetY
-
-float32 DroneAltitude
-float32 TargetAltitude
-
+float32 yaw
+float32 targetYaw
+float32 yawVel
+geometry_msgs/Vector3 position
+geometry_msgs/Vector3 target
+geometry_msgs/Vector3 framePosition
+geometry_msgs/Vector3 frameTarget
+geometry_msgs/Vector3 vel
 string mode
-
 
 

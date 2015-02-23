@@ -24,9 +24,9 @@ drone_control_msgs::send_control_data control_data;
 	nh_.getParam("/drone_target_points/new_altitude",TargetAltitude);
 
 	// Obtaining target point info
-	control_data.pose.position.x = TargetPoint[0];
-	control_data.pose.position.y = TargetPoint[1];
-	control_data.pose.position.z = TargetAltitude;
+	control_data.position.x = TargetPoint[0];
+	control_data.position.y = TargetPoint[1];
+	control_data.position.z = TargetAltitude;
 	control_data.yaw = TargetYaw;
 
 	control_data_pub_.publish(control_data);

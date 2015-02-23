@@ -1,11 +1,9 @@
 <!-- --> 
 <launch>
 
-	<node name="drone_target_points" pkg="send_control_position" type="send_control_position_node" output="screen">
-		<remap from="control_data_message"  to="/drone_target_points"/>
-		<param name="new_yaw" value="0.0"/>
-		<param name="new_altitude" value="1.0"/>
-		<rosparam>new_position:  [0.0, 0.0]</rosparam>  <!-- [X, Y] -->
+	<node name="drone_target_points" pkg="drone_following_leader" type="following_leader_node" output="screen">
+		<remap from="leader_pose_topic"  to="/optitrack/rigid_bodies"/>
+		<remap from="leader_info_topic"  to="/drone_target_points"/>
 	</node>
 
 
@@ -15,7 +13,7 @@
 		<rosparam>Kd:  [0.25, 0.25]</rosparam>  <!-- [pitch, roll] -->
 		<rosparam>Kp:  [0.25, 0.25,  0.25, 0.0125]</rosparam>  <!-- [pitch, roll, altitude, yaw] -->
 		<rosparam>velocity_limit:  [0.2, 0.2, 1.0, 1.0]</rosparam>  <!-- [pitch, roll, altitude, yaw] -->
-		<rosparam>delta_pose:  [0.0, 0.0, 0.0, 0.0]</rosparam>  <!-- [x,y,z,yaw (degrees)] -->
+		<rosparam>delta_pose:  [-1.0, 0.0, 0.0, 0.0]</rosparam>  <!-- [x,y,z,yaw (degrees)] -->
 		<rosparam>virtual_fence:  [3.0, -2.45, 1.85, -2.4, 2.25]</rosparam>  <!-- [maxX, minX, maxY, minY, maxAltitude] -->
 	</node>
 

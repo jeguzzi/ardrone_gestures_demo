@@ -1,4 +1,4 @@
 
-geometry_msgs/Pose pose
+geometry_msgs/Vector3 position
 float32 yaw
 
