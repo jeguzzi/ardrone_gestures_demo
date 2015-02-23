@@ -2,7 +2,7 @@
 <launch>
 
 	<node name="optitrack" pkg="sim_optitrack" type="sim_optitrack_node" output="screen">
-			<rosparam>rigid_bodies_name:  [quadrotor]</rosparam>
+			<rosparam>rigid_bodies_name:  [quadrotor,leader]</rosparam>
 	</node>
 
 	<node name="drone_target_points" pkg="drone_following_leader" type="following_leader_node" output="screen">
