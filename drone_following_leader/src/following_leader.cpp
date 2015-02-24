@@ -15,8 +15,9 @@
 
 // Some global variables
 drone_control_msgs::send_control_data leader_publish_data;
-std::vector<double> Leader_info (4,0); /* x,y,z,yaw */
+std::vector<double> Leader_info (4,0), virtual_fence (5); 
 std::vector<float> leader_quaternion (4,0); 
+int leader_id, ant_leader_id, marker_id;
 
 double quaternion2angles(std::vector<float> &quaternion){
 	double roll, pitch, yaw, Dyaw;
@@ -31,18 +32,49 @@ return Dyaw;
 // Define callbacks 
 void hasReceivedLeaderState(const optitrack_msgs::RigidBodies::ConstPtr& msg){
 	
-  	Leader_info[0] = msg->rigid_bodies[1].pose.position.x; 
-	Leader_info[1] = msg->rigid_bodies[1].pose.position.y;
-	Leader_info[2] = msg->rigid_bodies[1].pose.position.z;
-	leader_quaternion[0] = msg->rigid_bodies[1].pose.orientation.x;
-	leader_quaternion[1] = msg->rigid_bodies[1].pose.orientation.y;
-	leader_quaternion[2] = msg->rigid_bodies[1].pose.orientation.z;
-	leader_quaternion[3] = msg->rigid_bodies[1].pose.orientation.w;
+	if (leader_id != ant_leader_id){
+		for (int i=0; i<=msg->rigid_bodies.size(); i++){
+			if (leader_id == msg->rigid_bodies[i].id)
+			marker_id = i;
+		}
+	}
+	
+  	Leader_info[0] = msg->rigid_bodies[marker_id].pose.position.x; 
+	Leader_info[1] = msg->rigid_bodies[marker_id].pose.position.y;
+	Leader_info[2] = msg->rigid_bodies[marker_id].pose.position.z;
+	leader_quaternion[0] = msg->rigid_bodies[marker_id].pose.orientation.x;
+	leader_quaternion[1] = msg->rigid_bodies[marker_id].pose.orientation.y;
+	leader_quaternion[2] = msg->rigid_bodies[marker_id].pose.orientation.z;
+	leader_quaternion[3] = msg->rigid_bodies[marker_id].pose.orientation.w;
 	Leader_info[3] = quaternion2angles(leader_quaternion);
 
-	leader_publish_data.position.x = Leader_info[0];
-	leader_publish_data.position.y = Leader_info[1];
-	leader_publish_data.position.z = Leader_info[2];
+
+	// Publishing target info
+	// x position control
+	if (Leader_info[0]>virtual_fence[0]-0.1)
+		leader_publish_data.position.x = virtual_fence[0]-0.1;
+	else if (Leader_info[0]<virtual_fence[1]+0.1)
+		leader_publish_data.position.x = virtual_fence[1]+0.1;
+	else	
+		leader_publish_data.position.x = Leader_info[0];
+
+	// y position control
+	if (Leader_info[1]>virtual_fence[2]-0.1)
+		leader_publish_data.position.y = virtual_fence[2]-0.1;
+	else if (Leader_info[1]<virtual_fence[3]+0.1)
+		leader_publish_data.position.y = virtual_fence[3]+0.1;
+	else	
+		leader_publish_data.position.y = Leader_info[1];
+	
+	// z control
+	if (Leader_info[2]<0.3)
+		leader_publish_data.position.z = 0.3;
+	else if (Leader_info[2]>virtual_fence[4]-0.1)
+		leader_publish_data.position.z = virtual_fence[4]-0.1;
+	else	
+		leader_publish_data.position.z = Leader_info[2];
+
+	// yaw control
 	leader_publish_data.yaw = Leader_info[3];
 
   return;
@@ -82,6 +114,10 @@ ros::Publisher leader_info_pub_=nh_.advertise<drone_control_msgs::send_control_d
 
 
 	while (ros::ok()){
+
+	ant_leader_id = leader_id;
+	nh_.getParam("/drone_control_node/virtual_fence",virtual_fence);
+	nh_.getParam("/drone_target_points/leader_id",leader_id);
 	leader_info_pub_.publish(leader_publish_data);
    	ros::spinOnce(); // if you were to add a subscription into this application, and did not have ros::spinOnce() here, your callbacks would never get called.
     	rate.sleep();

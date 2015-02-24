@@ -35,6 +35,7 @@ return Dyaw;
 }
 
 // Define callbacks
+
 void hasReceivedModelState(const optitrack_msgs::RigidBodies::ConstPtr& msg){
 	
   	Drone_info[0] = msg->rigid_bodies[0].pose.position.x; 
@@ -58,6 +59,7 @@ void hasReceivedModelState(const optitrack_msgs::RigidBodies::ConstPtr& msg){
 /*
 void hasReceivedModelState(const optitrack_msgs::RigidBodyData::ConstPtr& msg){
 	
+	std::cout << "in the call back" << std::endl;
 	// Obtaining drone info 
   	Drone_info[0] = msg->pose.position.x; 
 	Drone_info[1] = msg->pose.position.y;
@@ -270,8 +272,11 @@ srv.request.duration = 0;
 	
 		drone_info_pub_.publish(publish_data);
 		}
-	else
+	else{
 		std::cout << "Waiting for optitrack data" << std::endl;
+		// ardrone must land 
+		land_pub_.publish(EmergencyMsg);
+		}
 
 	/* Led animation to alert about low battery */
 	if(DroneBattery <= 20 && DroneBattery > 10 && BatteryFlag == 0){
