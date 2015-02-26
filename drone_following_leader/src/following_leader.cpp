@@ -17,7 +17,7 @@
 drone_control_msgs::send_control_data leader_publish_data;
 std::vector<double> Leader_info (4,0), virtual_fence (5); 
 std::vector<float> leader_quaternion (4,0); 
-int leader_id, ant_leader_id, marker_id;
+int marker_id = 1.0, leader_id =2.0, ant_leader_id =2.0; 
 
 double quaternion2angles(std::vector<float> &quaternion){
 	double roll, pitch, yaw, Dyaw;

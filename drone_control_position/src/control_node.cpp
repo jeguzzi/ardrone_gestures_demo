@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Empty.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <tf/transform_datatypes.h>
 #include <tf/LinearMath/Matrix3x3.h>
 #include <tf/LinearMath/Quaternion.h>
@@ -13,7 +14,7 @@
 #include "ardrone_autonomy/LedAnim.h"
 #include <drone_control_msgs/drone_control_info.h>
 #include <drone_control_msgs/send_control_data.h>
-# define PI           3.14159265358979323846
+# define PI 3.14159265358979323846
 
 // Some global variables
 
@@ -35,31 +36,8 @@ return Dyaw;
 }
 
 // Define callbacks
+void hasReceivedModelState(const geometry_msgs::PoseStamped::ConstPtr& msg){
 
-void hasReceivedModelState(const optitrack_msgs::RigidBodies::ConstPtr& msg){
-	
-  	Drone_info[0] = msg->rigid_bodies[0].pose.position.x; 
-	Drone_info[1] = msg->rigid_bodies[0].pose.position.y;
-	Drone_info[2] = msg->rigid_bodies[0].pose.position.z;
-	drone_quaternion[0] = msg->rigid_bodies[0].pose.orientation.x;
-	drone_quaternion[1] = msg->rigid_bodies[0].pose.orientation.y;
-	drone_quaternion[2] = msg->rigid_bodies[0].pose.orientation.z;
-	drone_quaternion[3] = msg->rigid_bodies[0].pose.orientation.w;
-	Drone_info[3] = quaternion2angles(drone_quaternion);
-
-	publish_data.yaw = Drone_info[3];
-	publish_data.position.x = Drone_info[0];
-	publish_data.position.y = Drone_info[1];
-	publish_data.position.z = Drone_info[2];
-
-  return;
-} 
-
-
-/*
-void hasReceivedModelState(const optitrack_msgs::RigidBodyData::ConstPtr& msg){
-	
-	std::cout << "in the call back" << std::endl;
 	// Obtaining drone info 
   	Drone_info[0] = msg->pose.position.x; 
 	Drone_info[1] = msg->pose.position.y;
@@ -77,7 +55,7 @@ void hasReceivedModelState(const optitrack_msgs::RigidBodyData::ConstPtr& msg){
 	publish_data.position.z = Drone_info[2];
 
   return;
-} */
+}
 
 void hasReceivedControlInfo(const drone_control_msgs::send_control_data::ConstPtr& msg){
 
@@ -213,9 +191,9 @@ double fs=20;
 std::vector<double> dPose (4,0), Kp (4,0), Kd (2,0), velocity_limit(4,0);
 int  BatteryFlag = 0;
 
-ros::Subscriber optitrack_sub_=nh_.subscribe("drone_info_topic", 1, hasReceivedModelState);
-ros::Subscriber contol_sub = nh_.subscribe("control_info", 1, hasReceivedControlInfo);
-ros::Subscriber alt_sub = nh_.subscribe("/ardrone/navdata", 1, hasReceivedNavdataInfo);
+ros::Subscriber optitrack_sub_=nh_.subscribe("drone_info_topic", 10, hasReceivedModelState);
+ros::Subscriber contol_sub = nh_.subscribe("control_info", 10, hasReceivedControlInfo);
+ros::Subscriber alt_sub = nh_.subscribe("/ardrone/navdata", 10, hasReceivedNavdataInfo);
 
 ros::Publisher vel_pub_=nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 ros::Publisher drone_info_pub_=nh_.advertise<drone_control_msgs::drone_control_info>("/drone_control_info", 1);
