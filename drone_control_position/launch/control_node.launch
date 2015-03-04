@@ -8,15 +8,16 @@
 		<rosparam>new_position:  [0.0, 0.0]</rosparam>  <!-- [X, Y] -->
 	</node>
 
-
 	<node name="drone_control_node" pkg="drone_control_position" type="control_drone_position_node" output="screen">
-		<remap from="drone_info_topic"  to="/optitrack/rigid_bodies"/>
+		<remap from="drone_info_topic"  to="/optitrack/leader_3"/>
 		<remap from="control_info"  to="/drone_target_points"/>
 		<rosparam>Kd:  [0.25, 0.25]</rosparam>  <!-- [pitch, roll] -->
 		<rosparam>Kp:  [0.25, 0.25,  0.25, 0.0125]</rosparam>  <!-- [pitch, roll, altitude, yaw] -->
 		<rosparam>velocity_limit:  [0.2, 0.2, 1.0, 1.0]</rosparam>  <!-- [pitch, roll, altitude, yaw] -->
-		<rosparam>delta_pose:  [0.0, 0.0, 0.0, 0.0]</rosparam>  <!-- [x,y,z,yaw (degrees)] -->
-		<rosparam>virtual_fence:  [3.0, -2.45, 1.85, -2.4, 2.25]</rosparam>  <!-- [maxX, minX, maxY, minY, maxAltitude] -->
+		<rosparam>delta_pose:  [-1.5, 0.0, 0.0, 0.0]</rosparam>  <!-- [x,y,z,yaw (degrees)] -->
+		<rosparam>virtual_fence:  [0.5, -5.5, -0.5, -5.5, 2.25]</rosparam>  
+		<!--rosparam>virtual_fence:  [3.0, -2.45, 1.85, -2.4, 2.25]</rosparam-->  
+		<!-- [maxX, minX, maxY, minY, maxAltitude] -->
 	</node>
 
 </launch>
