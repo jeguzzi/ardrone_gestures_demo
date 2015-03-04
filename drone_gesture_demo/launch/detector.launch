@@ -1,7 +1,0 @@
-<!-- -->
-
-<launch>
-    <!-- Launches the AR.Drone driver -->
-	<node name="detector_1" pkg="drone_gestures_demo" type="detectorBig" output="screen" args="color.txt"/>
-
-</launch>
